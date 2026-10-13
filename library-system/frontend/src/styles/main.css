@@ -1,0 +1,210 @@
+:root {
+  color: #20272b;
+  background: #f4f6f8;
+  font-family:
+    Inter, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --primary: #0f766e;
+  --primary-strong: #0b5f59;
+  --accent: #c8872a;
+  --text: #20272b;
+  --muted: #6b747a;
+  --line: #e4e8eb;
+  --surface: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-width: 320px;
+  color: var(--text);
+  background: #f4f6f8;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.page {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.page-header h1 {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.page-header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.toolbar .spacer {
+  flex: 1;
+}
+
+.table-panel {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  padding: 18px 20px;
+}
+
+.empty-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.book-title {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.book-title strong {
+  overflow: hidden;
+  color: var(--text);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-title span {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.el-table {
+  --el-table-header-bg-color: #f8fafb;
+  --el-table-row-hover-bg-color: #f3f8f7;
+}
+
+.el-table th.el-table__cell {
+  height: 48px;
+  color: #4f595f;
+  font-weight: 600;
+}
+
+.el-table td.el-table__cell {
+  height: 54px;
+}
+
+.el-dialog {
+  max-width: calc(100vw - 32px);
+  border-radius: 8px;
+}
+
+.el-dialog__header {
+  padding: 20px 24px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.el-dialog__body {
+  padding: 22px 24px 6px;
+}
+
+.el-dialog__footer {
+  padding: 10px 24px 22px;
+}
+
+.el-form-item__label {
+  color: #424a4f;
+}
+
+.el-message-box {
+  max-width: calc(100vw - 32px);
+  border-radius: 8px;
+}
+
+@media (max-width: 760px) {
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .page-header h1 {
+    font-size: 21px;
+  }
+
+  .toolbar {
+    align-items: stretch;
+  }
+
+  .toolbar > .el-input,
+  .toolbar > .el-select {
+    width: 100% !important;
+  }
+
+  .toolbar > .el-button {
+    margin-left: 0;
+  }
+
+  .toolbar .spacer {
+    display: none;
+  }
+
+  .pagination {
+    justify-content: center;
+    overflow-x: auto;
+  }
+
+  .el-table {
+    min-width: 820px;
+  }
+
+  .table-panel {
+    overflow-x: auto;
+  }
+}
+

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.library.mapper.BookReservationMapper">
+
+    <select id="selectReservationPage" resultType="com.library.vo.BookReservationVO">
+        SELECT
+            r.id,
+            r.book_id,
+            r.user_id,
+            r.status,
+            r.ready_at,
+            r.expire_at,
+            r.completed_at,
+            r.canceled_at,
+            r.created_at,
+            r.updated_at,
+            b.title AS book_title,
+            b.isbn AS book_isbn,
+            b.category AS book_category,
+            u.username,
+            u.real_name,
+            CASE WHEN r.status = 'WAITING' THEN (
+                SELECT COUNT(*) + 1
+                FROM book_reservation r2
+                WHERE r2.book_id = r.book_id
+                  AND r2.deleted = 0
+                  AND r2.status = 'WAITING'
+                  AND (r2.created_at &lt; r.created_at OR (r2.created_at = r.created_at AND r2.id &lt; r.id))
+            ) ELSE NULL END AS queue_position
+        FROM book_reservation r
+        LEFT JOIN book b ON b.id = r.book_id AND b.deleted = 0
+        LEFT JOIN sys_user u ON u.id = r.user_id AND u.deleted = 0
+        WHERE r.deleted = 0
+        <if test="userId != null">
+            AND r.user_id = #{userId}
+        </if>
+        <if test="status != null and status != ''">
+            AND r.status = #{status}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+                b.title LIKE CONCAT('%', #{keyword}, '%')
+                OR b.isbn LIKE CONCAT('%', #{keyword}, '%')
+                OR u.username LIKE CONCAT('%', #{keyword}, '%')
+                OR u.real_name LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        ORDER BY r.created_at DESC, r.id DESC
+    </select>
+</mapper>

@@ -1,0 +1,23 @@
+[Unit]
+Description=Online Library Borrowing System
+After=network.target mysqld.service redis-library.service
+Wants=network.target mysqld.service redis-library.service
+
+[Service]
+Type=simple
+User=library
+Group=library
+WorkingDirectory=/opt/library/app
+EnvironmentFile=/opt/library/config/library.env
+ExecStart=/opt/library/java/bin/java $JAVA_OPTS -jar /opt/library/app/library-server.jar
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65535
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.library.mapper.BorrowRecordMapper">
+
+    <select id="selectRecordPage" resultType="com.library.vo.BorrowRecordVO">
+        SELECT
+            r.id,
+            r.borrow_no,
+            r.user_id,
+            r.book_id,
+            r.book_title,
+            r.book_isbn,
+            r.status,
+            r.borrowed_at,
+            r.due_at,
+            r.returned_at,
+            r.renew_count,
+            r.fine_amount,
+            r.fine_status,
+            r.created_at,
+            r.updated_at,
+            u.username,
+            u.real_name
+        FROM borrow_record r
+        LEFT JOIN sys_user u ON u.id = r.user_id AND u.deleted = 0
+        WHERE r.deleted = 0
+        <if test="userId != null">
+            AND r.user_id = #{userId}
+        </if>
+        <if test="status != null and status != ''">
+            AND r.status = #{status}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+                r.borrow_no LIKE CONCAT('%', #{keyword}, '%')
+                OR r.book_title LIKE CONCAT('%', #{keyword}, '%')
+                OR u.username LIKE CONCAT('%', #{keyword}, '%')
+                OR u.real_name LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        ORDER BY r.borrowed_at DESC, r.id DESC
+    </select>
+</mapper>
