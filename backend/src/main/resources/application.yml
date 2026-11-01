@@ -63,6 +63,11 @@ app:
   auth:
     token-ttl: ${TOKEN_TTL:604800}
     token-prefix: "library:token:"
+  ai:
+    # AI 服务调用内部工具接口所需的共享密钥；留空表示开发期不校验
+    internal-token: ${AI_INTERNAL_TOKEN:}
+    # 内部工具接口路径前缀（生产环境 nginx 不应对外暴露此路径）
+    internal-path-prefix: /api/ai/internal/
 
 logging:
   level:
