@@ -286,3 +286,51 @@ cd backend && JAVA_HOME=/Users/dd/Library/Java/JavaVirtualMachines/ms-17.0.18/Co
 ```
 
 > 注意：必须带 `clean`。本机 Java 语言服务器会在 `target/` 写入带编译错误的 class，导致裸 `mvn test` 增量编译跳过而报 2 个假失败。
+
+### 9.4 端到端验证：AI 服务 + 真实后端 + 真实数据库
+
+脚本：`scripts/e2e_ai.py`（`ai-service/.venv/bin/python scripts/e2e_ai.py`）
+
+实测事件流（mock 模型 + 真实 Java 后端 + MySQL）：
+
+```text
+帮我借红楼梦
+  meta              → sessionId/traceId
+  tool_call         → search_books {"keyword":"红楼梦"}
+  tool_result       → ok, 找到 1 本，可借 6 本
+  confirm_required  → cf-xxx「即将为你借阅《红楼梦》（bookId=3），确认借阅吗？」
+  （此时查库：borrowedCount 仍为 0 —— 未确认绝不落库）
+用户确认 approved=true
+  tool_call         → borrow_book {"bookId":3}
+  tool_result       → ok「借阅成功，应还日期 2026-12-01」
+  token × N → done   （查库：borrowedCount = 1，borrow_record 新增一行）
+我要还书
+  tool_call → get_my_borrows → confirm_required「归还《红楼梦》（borrowId=2）」→ 确认
+  → return_book → ok → done（查库：库存从 5/6 恢复为 6/6，status=RETURNED）
+```
+
+**断言结果：全部通过**
+
+| 安全/工程命题 | 验证方式 | 结果 |
+|---|---|---|
+| 人在回路：确认前不落库 | 收到 `confirm_required` 后查库，借阅数不变 | ✅ |
+| 确认后才执行写操作 | 确认后查库 +1，`borrow_record` 新增行 | ✅ |
+| 身份隔离：reader 看不到 reader2 的数据 | reader 借书后 reader2 的 `/borrows/my` 为 0 条 | ✅ |
+| 越权拦截：reader2 不能归还 reader 的记录 | `POST /return` → `code=403「只能归还自己的借阅记录」` | ✅ |
+| 工具调用可审计 | `operation_log` 记录 5 条 AI 工具动作（含 SUCCESS/FAIL、耗时、URI、参数） | ✅ |
+| 库存一致性 | 借出 6→5，归还 5→6，无并发丢失 | ✅ |
+| token 失效透传 | 用 fake token 请求 → AI 服务直接回 HTTP 401，不进入 Agent | ✅ |
+
+### 9.5 W1 期间修复的缺陷
+
+1. **mock 模型关键词抽取**：`帮我借红楼梦` 被抽成 `借红楼梦` 导致检索为空，写操作确认流程无法触发。修复方式：`_NOISE_WORDS` 补齐「帮我借/我要借/想借/借一本…」等动词短语，并按长度倒序剔除。
+2. **压测脚本不支持自定义请求头**：无法压 `/api/ai/internal/**` 这类需要 `X-Internal-Token` 的接口。修复方式：新增 `--header`（可重复）与失败原因采集。
+   修复后实测：`/api/ai/internal/context` 并发 10 下 2573 QPS / P95 6.8ms / 0 失败（本机 M 系列芯片 + 本地 MySQL，仅作脚本可用性验证，不是容量结论）。
+
+### 9.6 测试总览
+
+| 层 | 用例数 | 命令 | 结果 |
+|---|---|---|---|
+| Java（含原有 42） | 71 | `mvn -B clean test` | 全绿 |
+| Python（AI 服务） | 91 | `ai-service/.venv/bin/python -m pytest ai-service -q` | 全绿 |
+| 端到端 | 16 项断言 | `python scripts/e2e_ai.py` | 全绿 |

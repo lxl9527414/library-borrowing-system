@@ -17,6 +17,11 @@ frontend/.vite/
 .env.local
 deploy/credentials.local
 
+
+# ===== Python 通用 =====
+__pycache__/
+*.pyc
+
 # ===== AI 服务 =====
 ai-service/.venv/
 ai-service/**/__pycache__/

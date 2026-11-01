@@ -1,0 +1,29 @@
+# AI 服务依赖（按本机已安装版本精确 pin，Python 3.10 / 3.11 均可）
+# 安装（国内镜像）：
+#   pip install -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com -r requirements.txt
+
+# ---- Web / SSE ----
+fastapi==0.162.0
+uvicorn[standard]==0.54.0
+sse-starlette==3.5.1
+starlette==1.7.0
+anyio==4.15.1
+
+# ---- 配置 / 数据校验 ----
+pydantic==2.14.2
+pydantic-settings==2.15.0
+python-dotenv==1.2.4
+
+# ---- LangGraph / LangChain ----
+langgraph==1.2.19
+langgraph-checkpoint==4.3.1
+langchain-core==1.7.3
+langchain-openai==1.7.3
+openai==3.42.0
+
+# ---- 调用 Java 内部工具接口 ----
+httpx==0.28.1
+
+# ---- 测试（本地与 CI 均使用；Docker 镜像里也带上，便于容器内自检）----
+pytest==9.2.0
+pytest-asyncio==1.4.1
