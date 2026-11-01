@@ -18,6 +18,9 @@ frontend/.vite/
 deploy/credentials.local
 
 
+# ===== 本地开发数据（隔离 MySQL 数据目录等）=====
+.dev/
+
 # ===== Python 通用 =====
 __pycache__/
 *.pyc
