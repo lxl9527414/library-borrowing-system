@@ -83,6 +83,8 @@ cat > "$DEV/mysql.cnf" <<EOF
 basedir=$MYSQL_BASE
 datadir=$MYSQL_DATA
 port=$MYSQL_PORT
+# 只监听回环地址：这个隔离实例是 root 空密码的开发库，绝不能暴露到局域网
+bind-address=127.0.0.1
 socket=$MYSQL_SOCK
 pid-file=$DEV/mysql.pid
 log-error=$DEV/mysql.log
