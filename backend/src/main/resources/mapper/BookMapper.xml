@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.library.mapper.BookMapper">
+
+    <select id="selectCategoryDistribution" resultType="com.library.vo.DashboardStatVO">
+        SELECT
+            category AS name,
+            COALESCE(SUM(total_stock), 0) AS value,
+            COUNT(*) AS title_count
+        FROM book
+        WHERE deleted = 0
+          AND category IS NOT NULL
+          AND category != ''
+        GROUP BY category
+        ORDER BY value DESC, category ASC
+    </select>
+</mapper>

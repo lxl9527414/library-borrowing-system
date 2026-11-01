@@ -1,0 +1,15 @@
+[mysqld]
+character-set-server=utf8mb4
+collation-server=utf8mb4_unicode_ci
+bind-address=127.0.0.1
+max_connections=80
+table_open_cache=256
+thread_cache_size=16
+innodb_buffer_pool_size=128M
+innodb_log_file_size=48M
+innodb_flush_log_at_trx_commit=2
+performance_schema=OFF
+sort_buffer_size=1M
+join_buffer_size=1M
+default_password_lifetime=0
+mysqlx=OFF
