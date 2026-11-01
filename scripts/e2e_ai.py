@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -40,6 +41,20 @@ def check(name: str, condition: bool, detail: str = "") -> None:
     else:
         _failures.append(name)
         print(f"  {FAIL} {name} {detail}")
+
+
+def _load_env() -> dict[str, str]:
+    """读取仓库根目录 .env（gitignored）里的本地演示凭据；没有则用种子默认值。"""
+    env: dict[str, str] = {}
+    env_file = Path(__file__).resolve().parent.parent / ".env"
+    if env_file.exists():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            env[key.strip()] = value.strip().strip('"').strip("'")
+    return env
 
 
 def login(client: httpx.Client, java: str, username: str, password: str) -> str:
@@ -112,8 +127,9 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--java", default="http://127.0.0.1:18080")
     parser.add_argument("--ai", default="http://127.0.0.1:8000")
-    parser.add_argument("--user", default="reader", help="普通读者账号")
-    parser.add_argument("--password", default="reader123")
+    env = _load_env()
+    parser.add_argument("--user", default=env.get("DEMO_USER", "reader"), help="普通读者账号")
+    parser.add_argument("--password", default=env.get("DEMO_PASSWORD", "reader123"))
     parser.add_argument("--internal-token", default="dev-internal-token")
     parser.add_argument("--book", default="红楼梦", help="用于借还验证的书名（需有库存）")
     parser.add_argument("--skip-return", action="store_true")
@@ -131,6 +147,17 @@ def main() -> int:
         token = login(client, args.java, args.user, args.password)
         print(f"  · token {token[:10]}…")
         ctx = tool_call(client, args.java, token, args.internal_token, "context")["data"]
+        # 幂等保障：如果这本演示书已经被借出（例如上一次截图脚本跑完没还），先还掉，
+        # 否则后面的"借阅数 +1"断言会因为"重复借同一本"而失败
+        leftovers = [b for b in tool_call(client, args.java, token, args.internal_token, "my_borrows")["data"]
+                     if args.book in str(b.get("bookTitle") or "")]
+        for record in leftovers:
+            client.post(f"{args.java}/api/ai/internal/return", json={"borrowId": record["id"]},
+                        headers={"Authorization": f"Bearer {token}",
+                                 "X-Internal-Token": args.internal_token})
+            print(f"  · 清理残留借阅《{record.get('bookTitle')}》(borrowId={record['id']})")
+        if leftovers:
+            ctx = tool_call(client, args.java, token, args.internal_token, "context")["data"]
         before_count = ctx["borrowedCount"]
         print(f"  · 当前在借 {before_count} 本，读者 {ctx['user']['realName']}，规则上限 "
               f"{ctx['rule']['maxBorrowCount']} 本")

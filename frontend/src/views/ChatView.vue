@@ -197,7 +197,9 @@ const hasPendingConfirmation = computed(() =>
 
 const canSend = computed(() => !busy.value && !hasPendingConfirmation.value && input.value.trim().length > 0)
 
-const canReset = computed(() => streaming.value || messages.value.some((message) => message.role === 'user'))
+// 新对话随时可点：即使当前只有开场白，点击也是"清空并回到初始态"的幂等操作，
+// 不应该因为"还没说过话"就把按钮灰掉（否则点一次后又会变灰，看起来像只能用一次）
+const canReset = computed(() => true)
 
 const showQuickQuestions = computed(
   () => !busy.value && !hasPendingConfirmation.value && !messages.value.some((message) => message.role === 'user'),
@@ -484,7 +486,10 @@ function stop() {
 function resetChat() {
   if (streaming.value) stop()
   sessionId.value = ''
-  messages.value = [createWelcome()]
+  // 复用已经渲染过的那条开场白：只清掉用户/助手消息，
+  // 这样"开场白"在整个页面生命周期里只出现一次，不会每次新对话都重新生成一条
+  const welcome = messages.value.find((message) => message.welcome)
+  messages.value = welcome ? [welcome] : [createWelcome()]
   input.value = ''
   autoScroll.value = true
   nextTick(() => {

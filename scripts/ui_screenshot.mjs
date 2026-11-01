@@ -25,17 +25,44 @@
  */
 
 import { spawn } from 'node:child_process'
-import { rmSync, mkdirSync, writeFileSync } from 'node:fs'
+import { rmSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs'
 import { setTimeout as sleep } from 'node:timers/promises'
+
+// 读取仓库根目录 .env（本地凭据，已 gitignore）：仓库里只保留种子默认值，不出现真实密码
+function loadDotEnv() {
+  try {
+    const text = readFileSync(new URL('../.env', import.meta.url), 'utf8')
+    for (const line of text.split('\n')) {
+      const trimmed = line.trim()
+      if (!trimmed || trimmed.startsWith('#') || !trimmed.includes('=')) continue
+      const idx = trimmed.indexOf('=')
+      const key = trimmed.slice(0, idx).trim()
+      const value = trimmed.slice(idx + 1).trim().replace(/^["']|["']$/g, '')
+      if (!(key in process.env)) process.env[key] = value
+    }
+  } catch {
+    /* 没有 .env 就用种子默认值 */
+  }
+}
+loadDotEnv()
 
 const CHROME = process.env.CHROME_BIN || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const APP_BASE = process.env.APP_BASE || 'http://127.0.0.1:5173'
 const OUT_DIR = process.env.OUT_DIR || 'docs/screenshots'
 const CDP_PORT = Number(process.env.CDP_PORT || 9333)
-const USERNAME = process.env.APP_USER || 'reader'
-const PASSWORD = process.env.APP_PASSWORD || 'reader123'
+const USERNAME = process.env.APP_USER || process.env.DEMO_USER || 'reader'
+const PASSWORD = process.env.APP_PASSWORD || process.env.DEMO_PASSWORD || 'reader123'
 const BOOK = process.env.DEMO_BOOK || '红楼梦'
 const PROFILE = `/tmp/chrome-ui-shots-${process.pid}`
+
+/** 尽力删除临时 profile：Chrome 退出瞬间可能仍在写文件，ENOTEMPTY 不该让整个脚本失败 */
+function tryRemove(dir) {
+  try {
+    rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 120 })
+  } catch {
+    /* 忽略：临时目录清理失败不影响结果 */
+  }
+}
 
 // ---------------------------------------------------------------------------
 // 极简 CDP 客户端（Node 24 自带 WebSocket，无需第三方库）
@@ -94,7 +121,7 @@ class Cdp {
 }
 
 async function launchChrome() {
-  rmSync(PROFILE, { recursive: true, force: true })
+  tryRemove(PROFILE)
   const chrome = spawn(
     CHROME,
     [
@@ -213,6 +240,32 @@ async function clickDecision(cdp, approve = true) {
   if (result !== 'OK') throw new Error(`找不到${approve ? '确认' : '取消'}按钮：${result}`)
 }
 
+
+/** 调用业务后端内部接口，把本次演示借出的书归还（保证脚本可反复执行、不污染数据） */
+async function cleanupBorrow(cdp) {
+  if (process.env.DEMO_CLEANUP === '0') return null
+  const javaBase = process.env.JAVA_BASE || 'http://127.0.0.1:18080'
+  const internalToken = process.env.AI_INTERNAL_TOKEN || 'dev-internal-token'
+  const token = await evaluate(cdp, `localStorage.getItem('library_token')`)
+  if (!token) return null
+  const headers = { Authorization: `Bearer ${token}`, 'X-Internal-Token': internalToken }
+  try {
+    const listed = await (await fetch(`${javaBase}/api/ai/internal/borrows/my`, { headers })).json()
+    for (const record of listed?.data || []) {
+      if (!String(record.bookTitle || '').includes(BOOK)) continue
+      await fetch(`${javaBase}/api/ai/internal/return`, {
+        method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ borrowId: record.id }),
+      })
+      return record.bookTitle
+    }
+  } catch (err) {
+    console.warn(`  ⚠ 自动归还失败（不影响截图结果）：${err.message}`)
+  }
+  return null
+}
+
 async function main() {
   mkdirSync(OUT_DIR, { recursive: true })
   console.log(`启动无头 Chrome… (${CHROME})`)
@@ -299,11 +352,52 @@ async function main() {
     await sleep(700)
     await shot(cdp, '04-success.png')
 
+    // 5.5) 自清理：把刚才"真借"的书还掉，避免给后续测试留下在借记录
+    const cleaned = await cleanupBorrow(cdp)
+    if (cleaned) console.log(`  · 已自动归还《${cleaned}》，环境保持干净`)
+
+    // 6) 回归检查：「新对话」必须能反复点，且开场白只保留 1 条
+    //    （曾经的两个缺陷：canReset 依赖"存在用户消息"导致按钮点一次就变灰；
+    //      resetChat 每次新建欢迎语导致开场白重复）
+    console.log('回归检查：连续点击「新对话」…')
+    for (let i = 1; i <= 2; i += 1) {
+      const clicked = await evaluate(
+        cdp,
+        `(() => {
+          const btn = [...document.querySelectorAll('button')].find((b) => /新对话/.test(b.textContent || ''));
+          if (!btn) return 'NO_BTN';
+          if (btn.disabled) return 'DISABLED';
+          btn.click();
+          return 'CLICKED';
+        })()`,
+      )
+      if (clicked !== 'CLICKED') throw new Error(`「新对话」第 ${i} 次点击失败：${clicked}`)
+      await sleep(450)
+      const state = JSON.parse(
+        await evaluate(
+          cdp,
+          `JSON.stringify((() => {
+            const list = [...document.querySelectorAll('.chat-list > *')];
+            return {
+              bubbles: list.length,
+              welcome: list.filter((b) => (b.innerText || '').includes('我是云阁智能馆员')).length,
+            };
+          })())`,
+        ),
+      )
+      if (state.bubbles !== 1 || state.welcome !== 1) {
+        throw new Error(`「新对话」后状态异常：${JSON.stringify(state)}，预期只剩 1 条开场白`)
+      }
+    }
+    await shot(cdp, '05-new-chat.png')
+    console.log('  ✅ 新对话可反复点击，开场白保持 1 条')
+
     console.log(`\n✅ 截图完成：${OUT_DIR}`)
   } finally {
     cdp?.close()
     chrome.kill('SIGKILL')
-    rmSync(PROFILE, { recursive: true, force: true })
+    await sleep(300)
+    tryRemove(PROFILE)
   }
 }
 

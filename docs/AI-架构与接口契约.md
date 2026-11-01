@@ -387,3 +387,16 @@ cd backend && JAVA_HOME=/Users/dd/Library/Java/JavaVirtualMachines/ms-17.0.18/Co
   你填 Key 后可先跑 `ai-service/.venv/bin/python scripts/check_llm.py` 验证连通性 / function calling / 首 token 延迟，
   再跑 `scripts/e2e_ai.py` 走真实链路。
 - 前端"确认执行"路径对真实后端的写库验证已完成（见 10.1）；真实模型下的工具选择准确率待评测（W3）。
+
+### 10.5 W2 体验缺陷修复（对话页「新对话」）
+
+两个真实体验问题，均由 `scripts/ui_screenshot.mjs` 的回归检查固化：
+
+| 现象 | 根因 | 修复 |
+|---|---|---|
+| 「新对话」只能点一次，点完就变灰 | `canReset` 定义为「正在流式 或 存在用户消息」，重置后只剩开场白 → 立刻又禁用 | 改为常驻可点；流式中点击等同「停止并清空」，是幂等操作 |
+| 每点一次新对话都重新"打招呼" | `resetChat` 里 `messages = [createWelcome()]` 每次新建一条欢迎语 | 复用已渲染的那条开场白（`find(m => m.welcome)`），只清用户/助手消息；开场白在页面生命周期内只出现一次 |
+
+验证：`scripts/ui_screenshot.mjs` 现在会在截图后自动执行「连续点 2 次新对话 → 断言只剩 1 条开场白 + 按钮未禁用」，
+并输出 `docs/screenshots/05-new-chat.png`；同时脚本会**自动归还**演示借出的书，`scripts/e2e_ai.py` 也会在开始前
+清理同一本书的残留借阅，两个脚本因此都可反复执行、互不污染。
