@@ -34,3 +34,7 @@ class HealthResponse(BaseModel):
     status: str = "ok"
     llmProvider: str
     version: str
+    # 会话/确认状态存储后端：redis=持久化可用，memory=降级（重启后会话丢失）
+    sessionStore: str = "memory"
+    # LangGraph 检查点后端：redis=图进度可跨重启/多实例，memory=降级
+    checkpointer: str = "memory"

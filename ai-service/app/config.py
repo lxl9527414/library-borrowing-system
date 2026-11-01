@@ -70,6 +70,16 @@ class Settings(BaseSettings):
     # Agent 最大循环步数（契约 §5：默认 8）
     agent_max_steps: int = Field(default=8, gt=0)
 
+    # ---- Redis（W2：会话/确认状态与 LangGraph 检查点持久化）----
+    # 与 Spring 侧复用同一个 Redis（不同 db，默认 db=1）；连不上时自动降级为进程内存储
+    ai_redis_url: str = "redis://127.0.0.1:6379/1"
+    # 统一 key 前缀，避免与 Spring 业务 key 互相污染
+    ai_redis_key_prefix: str = "ai"
+    ai_redis_connect_timeout_seconds: float = Field(default=1.0, gt=0)
+    ai_redis_socket_timeout_seconds: float = Field(default=1.0, gt=0)
+    # LangGraph 检查点 TTL（分钟，0 = 永不过期）
+    ai_checkpoint_ttl_minutes: int = Field(default=1440, ge=0)
+
     # ---- Web ----
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 

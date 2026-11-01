@@ -334,3 +334,56 @@ cd backend && JAVA_HOME=/Users/dd/Library/Java/JavaVirtualMachines/ms-17.0.18/Co
 | Java（含原有 42） | 71 | `mvn -B clean test` | 全绿 |
 | Python（AI 服务） | 91 | `ai-service/.venv/bin/python -m pytest ai-service -q` | 全绿 |
 | 端到端 | 16 项断言 | `python scripts/e2e_ai.py` | 全绿 |
+
+---
+
+## 10. W2 实测结果（2026-11-01）
+
+### 10.1 前端流式对话页
+
+| 验证项 | 结果 |
+|---|---|
+| `npm run build` | ✅ 4.67s，`ChatView` chunk 122.25 kB（gzip 50.70 kB） |
+| Vite 代理顺序（`/api/ai` 在 `/api` 之前） | ✅ `/api/ai/health` 经 5173 代理返回 200 |
+| 无头 Chrome 真实走查（CDP） | ✅ 见 `docs/screenshots/01~04`：欢迎态 / 工具轨迹 / 确认卡片 / 成功回执 |
+| **浏览器点「确认执行」是否真落库** | ✅ `borrow_record` 新增 id=4（user 2 / book 3 / BORROWED），库存 6→5，`operation_log` 记录「AI借阅图书 SUCCESS 85ms」 |
+| 确认前不落库 | ✅ 确认卡出现时查库无新增记录 |
+| 移动端 390×844 | ✅ 无横向溢出 |
+| 401 处理 | ✅ 清 token 跳 `/login` |
+| 控制台错误 | ✅ 主流程 0 未捕获异常 |
+
+**截图**：`docs/screenshots/{01-welcome,02-found,03-confirm,04-success}.png`
+
+> 截图流程由 `scripts/ui_screenshot.mjs` 驱动（自写 CDP，不依赖 Playwright），可随时重跑生成最新界面。
+
+### 10.2 会话与 checkpointer 迁移 Redis
+
+| 验证项 | 结果 |
+|---|---|
+| Python 单测 | ✅ 111 passed（原 91 + 新增 20） |
+| `GET /api/ai/health` | ✅ `{"sessionStore":"redis","checkpointer":"memory"}` |
+| 服务重启后会话恢复 | ✅ `ai-service/scripts/verify_redis_persistence.py` 两进程验证：重启后 4 条消息仍在 |
+| Redis 不可用降级 | ✅ 服务仍可启动，health 显示 `memory`，问答正常以 `done` 结束 |
+| Redis key 规范 | `ai:session:{id}`（TTL 3600s）、`ai:confirmation:{id}`（TTL 300s，GETDEL 一次性消费） |
+
+**已知限制**：本机 Redis 为纯 `redis-server`，缺 RedisJSON + RediSearch 模块，因此 LangGraph 的
+`AsyncRedisSaver` 自动降级为 `InMemorySaver`（`checkpointer=memory`）：会话历史与确认状态**已**真持久化，
+但"图检查点/中断暂停态"仍在进程内。换成 Redis Stack 即自动启用，无需改代码；`docker-compose.yml`
+里已注明替换镜像的方式。
+
+### 10.3 W2 期间修复的缺陷
+
+1. **生产构建下 `/chat` 返回 404**：`SpaController` 的 SPA 路由是硬编码白名单，漏了新页面。
+   Vite dev 有 history fallback 所以本地发现不了，只有打包成 jar 后直接访问才暴露。
+   已补 `/chat` 并加注释提醒"新增页面必须同步"。
+2. **Vite 代理顺序陷阱**：`/api` 若声明在 `/api/ai` 之前，AI 的 SSE 请求会被错误转发到业务后端 18080。
+   已在 `vite.config.js` 用注释固化顺序约定。
+3. **nginx 未给 SSE 关缓冲**：新增 `/api/ai/` location（`proxy_buffering off` + `X-Accel-Buffering: no` +
+   300s 读超时），并显式 `location /api/ai/internal/ { return 404; }` 封掉内部工具接口的公网入口。
+
+### 10.4 尚未完成（需真实模型 Key）
+
+- 真实 DeepSeek/Qwen 联调：本机无 Key，Agent 主链路由 mock 模型驱动（协议与流程已全覆盖）。
+  你填 Key 后可先跑 `ai-service/.venv/bin/python scripts/check_llm.py` 验证连通性 / function calling / 首 token 延迟，
+  再跑 `scripts/e2e_ai.py` 走真实链路。
+- 前端"确认执行"路径对真实后端的写库验证已完成（见 10.1）；真实模型下的工具选择准确率待评测（W3）。

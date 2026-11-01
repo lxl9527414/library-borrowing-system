@@ -1,4 +1,4 @@
-# 云阁图书馆 AI 服务（W1）
+# 云阁图书馆 AI 服务（W1 + W2：Redis 会话持久化）
 
 FastAPI + LangGraph 实现的 AI Agent 服务：把用户的自然语言请求翻译成对 Java 业务后端的工具调用，
 通过 SSE 流式返回，并对「借书 / 还书 / 预约」这类写操作做**显式确认**。
@@ -26,6 +26,9 @@ curl http://127.0.0.1:8000/api/ai/health
 curl -N -X POST http://127.0.0.1:8000/api/ai/chat \
   -H 'Content-Type: application/json' -H 'Authorization: Bearer fake-token' \
   -d '{"message":"帮我找三体"}'
+
+# 4) W2：会话持久化验证（自动起停服务两次；需本机 Redis，默认 8020 端口）
+.venv/bin/python scripts/verify_redis_persistence.py
 ```
 
 Docker（与 `docker-compose.yml` 的 `ai-service` 服务一致）：
@@ -36,7 +39,8 @@ docker compose up -d --build ai-service   # 镜像内同样支持 mock 模式
 
 配置全部来自环境变量（`pydantic-settings` 读取仓库根 `.env` 与 `ai-service/.env`）：
 `LLM_PROVIDER`、`DEEPSEEK_API_KEY`、`DASHSCOPE_API_KEY`、`OLLAMA_*`、`JAVA_API_BASE`、
-`AI_INTERNAL_TOKEN`、`LLM_TIMEOUT_SECONDS`、`LLM_FALLBACK_CHAIN`、`AI_SESSION_TTL_SECONDS` 等，
+`AI_INTERNAL_TOKEN`、`LLM_TIMEOUT_SECONDS`、`LLM_FALLBACK_CHAIN`、`AI_SESSION_TTL_SECONDS`、
+`AI_REDIS_URL`（默认 `redis://127.0.0.1:6379/1`）、`AI_REDIS_KEY_PREFIX` 等，
 完整清单见 `.env.example`。**代码中不出现任何硬编码密钥**；缺 Key 时返回
 `LLM_AUTH_ERROR` 并提示具体要配置的环境变量。
 
@@ -64,13 +68,18 @@ ai-service/
 │   │   ├── prompts.py       系统提示词 + Java 侧会话上下文注入
 │   │   ├── events.py        SSE 事件模型 / 事件出口
 │   │   ├── graph.py         LangGraph 状态机：agent → authorize → tools → agent
+│   │   ├── checkpointer.py  checkpointer 工厂：AsyncRedisSaver 优先，失败降级内存
 │   │   └── runner.py        把图执行过程编排成 SSE 事件流
 │   ├── api/
 │   │   ├── chat.py          /api/ai/chat、/chat/confirm、/health、/sessions
 │   │   └── models.py        请求/响应模型
-│   └── memory/store.py      会话历史 + 确认状态内存存储（TTL，预留 Redis）
-├── tests/                   pytest（离线：mock 模型 + httpx.MockTransport）
-├── scripts/dev_run.sh       无参数本地启动脚本
+│   └── memory/
+│       ├── store.py         存储 Protocol + 内存实现 + 后端选择/降级单例
+│       └── redis_store.py   Redis 版 SessionStore / ConfirmationStore（TTL / 一次性消费）
+├── tests/                   pytest（离线：mock 模型 + httpx.MockTransport + fakeredis）
+├── scripts/
+│   ├── dev_run.sh           无参数本地启动脚本
+│   └── verify_redis_persistence.py  重启后会话仍在（W2 验收脚本）
 ├── requirements.txt / Dockerfile / pytest.ini / conftest.py
 ```
 
@@ -82,7 +91,7 @@ ai-service/
 |---|---|---|
 | POST | `/api/ai/chat` | 对话，SSE 流式 |
 | POST | `/api/ai/chat/confirm` | 写操作确认后恢复，返回同一套 SSE 事件 |
-| GET | `/api/ai/health` | `{"status":"ok","llmProvider":"mock","version":"w1"}` |
+| GET | `/api/ai/health` | `{"status":"ok","llmProvider":"mock","version":"w1","sessionStore":"redis","checkpointer":"memory"}` |
 | GET | `/api/ai/sessions/{sessionId}` | 会话历史（调试用，最近 20 条） |
 
 请求头：`Authorization: Bearer <用户 token>`（必填）、`Content-Type: application/json`。
@@ -164,12 +173,23 @@ event: error              {"code":"LLM_TIMEOUT","message":"模型响应超时，
 
 ---
 
-## 6. Agent 状态与内存存储
+## 6. Agent 状态与存储（W2：Redis 持久化，可重启/可多实例）
 
-- LangGraph `InMemorySaver`，`thread_id = sessionId`，支持多轮对话与 interrupt 恢复；
-- 会话历史与确认状态在 `app/memory/store.py`，均为进程内 + TTL 实现；
-- **W1 限制**：只适合单实例部署。W2 需要把 checkpointer 与会话存储一起换成 Redis，
-  代码已预留 `SessionStore` / `ConfirmationStore` 接口与 Redis 占位实现。
+- `thread_id = sessionId`，支持多轮对话与 interrupt 恢复；checkpointer 由
+  `app/agent/checkpointer.py` 工厂提供，**进程级单例、跨请求共享**：
+  - 优先 `AsyncRedisSaver`（`AI_REDIS_URL`，key 前缀 `ai:checkpoint*`，检查点默认 TTL 1 天），
+    需要 Redis 提供 RedisJSON + RediSearch（Redis Stack / 带模块的 Redis 8）；
+  - Redis 不可用（含普通 `redis-server` 缺少上述模块）→ `log.warn` 后降级 `InMemorySaver`，
+    **服务照常启动**，`/api/ai/health` 的 `checkpointer` 字段为 `memory`。
+- 会话历史与写操作确认状态：`app/memory/redis_store.py`
+  - key：`ai:session:{sessionId}`（JSON 消息列表，TTL `AI_SESSION_TTL_SECONDS` 默认 3600s）、
+    `ai:confirmation:{confirmationId}`（JSON 记录，TTL `CONFIRMATION_TTL_SECONDS` 默认 300s）；
+  - 确认记录**一次性消费**：`consume()` 校验 sessionId 后 `GETDEL`，重复点击返回失效；
+  - Redis 不可用 → 自动降级 `app/memory/store.py` 的内存实现，health 的 `sessionStore=memory`；
+  - 存储读写异常不会打断对话主链路（记 warning 日志）。
+- `app/main.py` 在 FastAPI lifespan 里初始化连接池并优雅关闭（`shutdown_graph` + `close_stores`）。
+- 后端状态可直接查看：`GET /api/ai/health` →
+  `{"status":"ok","llmProvider":"mock","version":"w1","sessionStore":"redis","checkpointer":"memory"}`。
 
 ### Python 3.10 兼容说明
 
@@ -203,7 +223,7 @@ mock 模型**只用于测试与演示**，真实模型走 `LLM_PROVIDER=deepseek
 
 ```bash
 cd ai-service
-.venv/bin/python -m pytest -q          # 91 passed（离线，不依赖网络与 API Key）
+.venv/bin/python -m pytest -q          # 111 passed（离线，不依赖网络与 API Key/Redis）
 ```
 
 测试策略：
@@ -215,7 +235,19 @@ cd ai-service
 - `tests/test_gateway.py`：缺 Key 中文报错、超时降级、部分输出不重复降级、限流重试；
 - `tests/test_graph_flow.py`：只读流程、写操作确认/拒绝、多写合并、最大步数、错误码；
 - `tests/test_sse_chat.py`：HTTP 层 SSE 协议、确认流程、Java 不可用/5xx 优雅降级；
-- `tests/test_store.py` / `test_config.py` / `test_prompts.py`：存储 TTL、配置、提示词。
+- `tests/test_store.py` / `test_config.py` / `test_prompts.py`：存储 TTL、配置、提示词；
+- `tests/test_redis_store.py`：fakeredis 离线验证 Redis 版会话/确认存储（TTL、一次性消费、
+  重复消费、key 前缀、`init_stores` 降级）；
+- `tests/test_checkpointer.py`：checkpointer 工厂（Redis 可用/不可用）、图单例可执行、
+  Redis 不可用时 lifespan 降级后 health=memory 且 mock 问答仍以 done 结束。
+
+端到端持久化验证（需要本机 Redis；脚本自动起停服务两次，用 8020 端口避免占用 8000）：
+
+```bash
+cd ai-service
+.venv/bin/python scripts/verify_redis_persistence.py
+# 预期输出：✅ 重启后会话仍在：共 N 条消息（sessionId=...）
+```
 
 ---
 
@@ -230,9 +262,11 @@ cd ai-service
 
 ---
 
-## 10. 下一步（W2+）
+## 10. 下一步（W2 之后）
 
-- Redis checkpointer + 会话存储，支持多实例；
+- 若要让 LangGraph 检查点也真正持久化（跨重启恢复 interrupt/多实例共享图进度），
+  部署时把 Redis 换成 Redis Stack（含 RedisJSON + RediSearch）即可，代码无需改动：
+  工厂会自动从 InMemorySaver 切到 AsyncRedisSaver；
 - 真实模型联调（DeepSeek / 通义），补充 token 计费与限流熔断；
 - Langfuse 全链路追踪（`LANGFUSE_ENABLED`，日志字段已对齐）；
 - W3：RAG（pgvector）与推荐、Text2SQL（W1 明确不做）。

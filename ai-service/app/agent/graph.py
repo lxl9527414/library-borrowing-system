@@ -18,7 +18,7 @@ from __future__ import annotations
 import functools
 import hashlib
 import json
-from typing import Any, Awaitable, Callable
+from typing import TYPE_CHECKING, Any, Awaitable, Callable
 
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage, ToolMessage
 from langchain_core.runnables import RunnableConfig
@@ -31,6 +31,9 @@ from app.agent.state import AgentState, RunContext
 from app.obs.logging import get_logger
 from app.tools.executor import CODE_TOOL_NOT_FOUND
 from app.tools.schemas import CONFIRM_SUMMARY_TEMPLATES, TOOL_SCHEMAS, is_write_tool
+
+if TYPE_CHECKING:  # pragma: no cover - 仅类型检查，运行时延迟导入避免循环依赖
+    from app.agent.checkpointer import CheckpointerBackend
 
 logger = get_logger("agent.graph")
 
@@ -364,8 +367,8 @@ def route_after_tools(state: AgentState) -> str:
     return "agent"
 
 
-def build_graph() -> Any:
-    """编译带 InMemorySaver 的状态机（进程内单例，见 get_graph）。"""
+def build_graph(checkpointer: Any = None) -> Any:
+    """编译状态机；checkpointer 由工厂提供（默认 InMemorySaver，测试/降级路径）。"""
     graph: StateGraph = StateGraph(AgentState)
     graph.add_node("agent", agent_node)
     graph.add_node("authorize", authorize_node)
@@ -379,21 +382,71 @@ def build_graph() -> Any:
     )
     graph.add_edge("authorize", "tools")
     graph.add_conditional_edges("tools", route_after_tools, {"agent": "agent", END: END})
-    return graph.compile(checkpointer=InMemorySaver())
+    return graph.compile(checkpointer=checkpointer if checkpointer is not None else InMemorySaver())
 
 
 _graph: Any = None
+# 与图绑定的 checkpointer 实例：进程级单例，应用退出时由 shutdown_graph 关闭连接
+_checkpointer: Any = None
+_checkpointer_backend: "CheckpointerBackend" = "memory"
+
+
+async def init_graph(settings: Any, *, saver_cls: Any = None) -> "CheckpointerBackend":
+    """应用启动时调用：通过工厂拿到 checkpointer 并编译进程级单例图。
+
+    优先 Redis（AsyncRedisSaver，跨重启/多实例共享 interrupt 状态）；
+    Redis 不可用时工厂会降级 InMemorySaver 并 log.warn，绝不阻断启动。
+    """
+    global _graph, _checkpointer, _checkpointer_backend
+
+    from app.agent.checkpointer import create_checkpointer  # 延迟导入，避免测试路径加载 redis 依赖
+
+    if _checkpointer is not None:
+        from app.agent.checkpointer import close_checkpointer
+
+        await close_checkpointer(_checkpointer)
+    saver, backend = await create_checkpointer(settings, saver_cls=saver_cls)
+    _checkpointer = saver
+    _checkpointer_backend = backend
+    _graph = build_graph(saver)
+    logger.info(
+        f"Agent 状态机已编译（checkpointer={backend}）",
+        extra={"code": "GRAPH_READY"},
+    )
+    return backend
 
 
 def get_graph() -> Any:
-    """进程级单例：InMemorySaver 必须在请求之间共享，否则无法恢复 interrupt。"""
+    """进程级单例：checkpointer 必须在请求之间共享，否则无法恢复 interrupt。
+
+    未经过 lifespan 初始化时（单元测试直接驱动图）懒加载 InMemorySaver 版本。
+    """
     global _graph
     if _graph is None:
         _graph = build_graph()
     return _graph
 
 
+def get_checkpointer_backend() -> "CheckpointerBackend":
+    """当前生效的 checkpointer 后端（health 端点展示用）。"""
+    return _checkpointer_backend
+
+
+async def shutdown_graph() -> None:
+    """应用退出时关闭 checkpointer 连接（幂等）。"""
+    global _graph, _checkpointer, _checkpointer_backend
+    from app.agent.checkpointer import close_checkpointer
+
+    await close_checkpointer(_checkpointer)
+    _checkpointer = None
+    _checkpointer_backend = "memory"
+    _graph = None
+
+
 def reset_graph() -> None:
     """测试辅助：丢弃检查点，重新编译状态机。"""
-    global _graph
+    global _graph, _checkpointer, _checkpointer_backend
     _graph = None
+    _checkpointer = None
+    _checkpointer_backend = "memory"
+

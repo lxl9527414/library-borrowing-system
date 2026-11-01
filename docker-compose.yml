@@ -38,6 +38,10 @@ services:
       start_period: 30s
 
   redis:
+    # 默认 redis:7-alpine：会话历史 / 确认状态 / 语义缓存都够用。
+    # 若要启用 Redis 版 LangGraph checkpointer（跨重启恢复对话上下文与中断暂停态），
+    # 换成自带 RedisJSON + RediSearch 的 Redis Stack，下面这行替换 image 即可：
+    #   image: ${DOCKER_MIRROR:-docker.io}/redis/redis-stack-server:7.2.0-v11
     image: ${DOCKER_MIRROR:-docker.io}/library/redis:7-alpine
     container_name: library-redis
     restart: unless-stopped

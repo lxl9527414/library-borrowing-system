@@ -20,14 +20,14 @@ from langgraph.types import Command
 from sse_starlette.sse import EventSourceResponse
 
 from app.agent.events import AgentEvent, EventEmitter
-from app.agent.graph import get_graph
+from app.agent.graph import get_checkpointer_backend, get_graph
 from app.agent.prompts import DEFAULT_SYSTEM_PROMPT, build_system_prompt
 from app.agent.runner import AgentStreamRunner
 from app.agent.state import RunContext
 from app.api.models import ChatRequest, ConfirmRequest, HealthResponse, SessionResponse
 from app.config import Settings, get_settings
 from app.llm.gateway import LLMGateway
-from app.memory.store import get_confirmation_store, get_session_store
+from app.memory.store import get_confirmation_store, get_session_store, get_store_backend
 from app.obs.logging import Stopwatch, get_logger, new_trace_id
 from app.tools.executor import ToolExecutor
 from app.tools.java_client import JavaClient, UpstreamUnauthenticated
@@ -360,6 +360,8 @@ async def health() -> HealthResponse:
         status="ok",
         llmProvider=settings.llm_provider,
         version=settings.service_version,
+        sessionStore=get_store_backend(),
+        checkpointer=get_checkpointer_backend(),
     )
 
 

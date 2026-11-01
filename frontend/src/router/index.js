@@ -20,6 +20,12 @@ const routes = [
         meta: { title: '工作台', icon: 'DataAnalysis' },
       },
       {
+        path: 'chat',
+        name: 'Chat',
+        component: () => import('@/views/ChatView.vue'),
+        meta: { title: '智能馆员', icon: 'ChatDotRound' },
+      },
+      {
         path: 'books',
         name: 'Books',
         component: () => import('@/views/BooksView.vue'),

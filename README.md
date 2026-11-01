@@ -13,7 +13,7 @@
 - 工作台：馆藏、库存、读者、借出、逾期、预约和归还统计
 - 工程能力：Maven、Lombok、Hutool、MyBatis-Plus、Spring AOP、定时任务、全局异常处理、参数校验
 
-## AI 原生改造（W1 已完成）
+## AI 原生改造（W2 已完成）
 
 在原有业务系统之上新增一层 AI 应用服务，把「借书 / 还书 / 预约 / 查借阅」变成可以用自然语言完成的 Agent 能力。设计原则与接口契约见 [docs/AI-架构与接口契约.md](docs/AI-架构与接口契约.md)。
 
@@ -29,23 +29,52 @@ Vue3 ──SSE──▶ ai-service（Python + FastAPI + LangGraph）
 | AI 内部工具 API（8 个端点，身份透传、防公网、写操作复用现有事务） | `backend/src/main/java/com/library/ai/` | ✅ W1 |
 | Python AI 服务（LangGraph Agent、6 个工具、SSE、人在回路确认、模型网关/降级、mock 离线模式） | `ai-service/` | ✅ W1 |
 | 本地编排（MySQL / Redis / pgvector / AI 服务） | `docker-compose.yml` | ✅ W1 |
-| 流式对话前端（工具调用可视化、确认卡片） | `frontend/src/views/` | ⏳ W2 |
+| 流式对话前端（打字机、工具调用轨迹、人在回路确认卡片、移动端适配） | `frontend/src/views/ChatView.vue` | ✅ W2 |
+| 会话持久化（Redis 存历史与确认状态，服务重启不丢；Redis 不可用自动降级） | `ai-service/app/memory/redis_store.py` | ✅ W2 |
+| 生产部署配套（nginx SSE 代理、内部接口封禁、SPA 路由） | `deploy/nginx/library.conf` | ✅ W2 |
 
 本地跑通（mock 模型，无需任何 API Key）：
 
 ```bash
-cp .env.example .env                      # 至少填 AI_INTERNAL_TOKEN，LLM_PROVIDER 保持 mock
-docker compose up -d                      # MySQL/Redis/pgvector/AI 服务
-cd backend && mvn spring-boot:run         # 业务后端 :18080
-# 前端流式对话界面在 W2 交付；当前可用脚本验证端到端：
-ai-service/.venv/bin/python scripts/e2e_ai.py
+# 方式一：一键脚本（隔离 MySQL，不碰本机 3306；自动起后端 + AI 服务）
+bash scripts/dev_up.sh
+cd frontend && npm run dev                # 前端 :5173（已配好 /api 与 /api/ai 代理）
+# 打开 http://localhost:5173/chat → 用 reader / reader123 登录 → 说「帮我借红楼梦」
+
+# 方式二：docker compose（MySQL/Redis/pgvector/AI 服务容器化）
+cp .env.example .env
+docker compose up -d
+cd backend && mvn spring-boot:run
+
+# 停止：bash scripts/dev_down.sh
 ```
+
+> 对话页必须经 Vite（开发）或 nginx（生产）访问，因为 `/api/ai/**` 需要被代理到 Python AI 服务；
+> 直接访问 `http://127.0.0.1:18080/chat` 页面能打开，但 AI 请求会 404。
+
+界面效果（`scripts/ui_screenshot.mjs` 无头 Chrome 自动走查生成，可重跑）：
+
+| 欢迎态 + 快捷问题 | 工具调用轨迹 |
+| --- | --- |
+| ![欢迎态](docs/screenshots/01-welcome.png) | ![工具轨迹](docs/screenshots/02-found.png) |
+
+| 写操作确认卡片（人在回路） | 确认后真实借阅成功 |
+| --- | --- |
+| ![确认卡片](docs/screenshots/03-confirm.png) | ![借阅成功](docs/screenshots/04-success.png) |
 
 验证与数据：
 
-- 后端 71 个单测（含原有 42 个）+ AI 服务 91 个单测，全部离线可跑
-- `scripts/e2e_ai.py`：查书 → 借书（确认前不落库）→ 确认后真实入库 → 我的借阅 → 还书 → 库存复原，16 项断言
-- 只读压测：`python3 docs/loadtest.py --token <token> --paths "/api/books?current=1&size=10" --levels 10,25 --duration 15`
+| 验证项 | 命令 | 结果 |
+| --- | --- | --- |
+| 后端单测（含原有业务测试） | `cd backend && mvn -B clean test` | 71 passed |
+| AI 服务单测 | `ai-service/.venv/bin/python -m pytest ai-service -q` | 111 passed |
+| 端到端（16 项断言：身份透传/人在回路/真实落库） | `ai-service/.venv/bin/python scripts/e2e_ai.py` | 全绿 |
+| 会话跨重启持久化 | `ai-service/.venv/bin/python ai-service/scripts/verify_redis_persistence.py` | 重启后历史仍在 |
+| 界面截图 | `node scripts/ui_screenshot.mjs` | 生成 4 张关键状态图 |
+| 真实模型兼容性（填 Key 后） | `ai-service/.venv/bin/python scripts/check_llm.py` | 连通性 / function calling / 首 token 延迟 |
+| 只读压测 | `python3 docs/loadtest.py --token <token> --paths "/api/books" --levels 10,25 --duration 15` | 见 `docs/压测报告.md` |
+
+> 当前默认 `LLM_PROVIDER=mock`（离线、无需 Key、回复确定性），方便演示与 CI；换成 DeepSeek/Qwen 只需改 `.env` 两行。
 
 ## 目录结构
 

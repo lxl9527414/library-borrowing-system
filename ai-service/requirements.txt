@@ -21,9 +21,16 @@ langchain-core==1.7.3
 langchain-openai==1.7.3
 openai==3.42.0
 
+# ---- Redis（W2：会话/确认状态 + LangGraph 检查点持久化）----
+# 注意：AsyncRedisSaver 需要 RedisJSON + RediSearch（Redis Stack）；普通 redis-server 会自动降级
+langgraph-checkpoint-redis==0.5.2
+redis==8.1.0
+
 # ---- 调用 Java 内部工具接口 ----
 httpx==0.28.1
 
 # ---- 测试（本地与 CI 均使用；Docker 镜像里也带上，便于容器内自检）----
 pytest==9.2.0
 pytest-asyncio==1.4.1
+# 离线 Redis 替身（单元测试不依赖真实 Redis）
+fakeredis==2.40.0

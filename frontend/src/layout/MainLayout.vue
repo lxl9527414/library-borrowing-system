@@ -105,6 +105,7 @@ const isMobile = ref(false)
 
 const allItems = [
   { path: '/dashboard', title: '工作台', icon: 'DataAnalysis' },
+  { path: '/chat', title: '智能馆员', icon: 'ChatDotRound' },
   { path: '/books', title: '图书管理', icon: 'Collection' },
   { path: '/borrows', title: '借阅记录', icon: 'Notebook' },
   { path: '/reservations', title: '预约排队', icon: 'AlarmClock' },
