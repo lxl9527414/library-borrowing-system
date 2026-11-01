@@ -13,6 +13,40 @@
 - 工作台：馆藏、库存、读者、借出、逾期、预约和归还统计
 - 工程能力：Maven、Lombok、Hutool、MyBatis-Plus、Spring AOP、定时任务、全局异常处理、参数校验
 
+## AI 原生改造（W1 已完成）
+
+在原有业务系统之上新增一层 AI 应用服务，把「借书 / 还书 / 预约 / 查借阅」变成可以用自然语言完成的 Agent 能力。设计原则与接口契约见 [docs/AI-架构与接口契约.md](docs/AI-架构与接口契约.md)。
+
+```text
+Vue3 ──SSE──▶ ai-service（Python + FastAPI + LangGraph）
+                    │ 内部工具调用（转发用户 token + X-Internal-Token）
+                    ▼
+              backend（Spring Boot，复用现有事务与 RBAC）
+```
+
+| 模块 | 位置 | 状态 |
+| --- | --- | --- |
+| AI 内部工具 API（8 个端点，身份透传、防公网、写操作复用现有事务） | `backend/src/main/java/com/library/ai/` | ✅ W1 |
+| Python AI 服务（LangGraph Agent、6 个工具、SSE、人在回路确认、模型网关/降级、mock 离线模式） | `ai-service/` | ✅ W1 |
+| 本地编排（MySQL / Redis / pgvector / AI 服务） | `docker-compose.yml` | ✅ W1 |
+| 流式对话前端（工具调用可视化、确认卡片） | `frontend/src/views/` | ⏳ W2 |
+
+本地跑通（mock 模型，无需任何 API Key）：
+
+```bash
+cp .env.example .env                      # 至少填 AI_INTERNAL_TOKEN，LLM_PROVIDER 保持 mock
+docker compose up -d                      # MySQL/Redis/pgvector/AI 服务
+cd backend && mvn spring-boot:run         # 业务后端 :18080
+# 前端流式对话界面在 W2 交付；当前可用脚本验证端到端：
+ai-service/.venv/bin/python scripts/e2e_ai.py
+```
+
+验证与数据：
+
+- 后端 71 个单测（含原有 42 个）+ AI 服务 91 个单测，全部离线可跑
+- `scripts/e2e_ai.py`：查书 → 借书（确认前不落库）→ 确认后真实入库 → 我的借阅 → 还书 → 库存复原，16 项断言
+- 只读压测：`python3 docs/loadtest.py --token <token> --paths "/api/books?current=1&size=10" --levels 10,25 --duration 15`
+
 ## 目录结构
 
 ```text
