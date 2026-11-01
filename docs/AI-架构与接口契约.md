@@ -400,3 +400,22 @@ cd backend && JAVA_HOME=/Users/dd/Library/Java/JavaVirtualMachines/ms-17.0.18/Co
 验证：`scripts/ui_screenshot.mjs` 现在会在截图后自动执行「连续点 2 次新对话 → 断言只剩 1 条开场白 + 按钮未禁用」，
 并输出 `docs/screenshots/05-new-chat.png`；同时脚本会**自动归还**演示借出的书，`scripts/e2e_ai.py` 也会在开始前
 清理同一本书的残留借阅，两个脚本因此都可反复执行、互不污染。
+
+### 10.6 Mock 模型的边界与增强（2026-11-01）
+
+**背景**：默认 `LLM_PROVIDER=mock` 是为离线开发/CI 准备的**关键词假模型**，不是真大模型。
+用户问「有地理类的书吗」这类自由表达时，早期 mock 认不出意图，回落到固定开场白，容易被误解为"AI 坏了"。
+
+**增强内容**：
+
+| 项 | 修复前 | 修复后 |
+|---|---|---|
+| 分类类问句 | 认不出，回落到开场白 | 支持「有X类的书吗 / 推荐几本X的书」：先抽主题词，命中 13 个真实分类则按 `category` 检索，否则按 `keyword` 检索（如"地理"→匹配书名） |
+| 兜底回复 | 复读开场白，看起来像死循环 | 明确说明「当前离线 Mock 模式，只能按关键词应答」，并给出可用的问法与切换到真实模型的方法 |
+| 前端提示 | tooltip 只显示 provider 名 | mock 模式下 tooltip 明确说明局限与切换方式 |
+
+**验证**：`有地理类的书吗` → `search_books(keyword=地理)` 命中 6 本；`有文学类的书吗` → `category=文学` 101 本；
+`有计算机类的书吗` → `category=计算机` 55 本；界面截图 `docs/screenshots/06-category-query.png`。111 个单测保持全绿。
+
+**仍然的边界**：mock 只能按内置词表应答，无法真正理解自由语言。**要演示"自然语言理解"，必须配置真实模型**：
+`.env` 设 `LLM_PROVIDER=deepseek` + `DEEPSEEK_API_KEY=...`，先用 `scripts/check_llm.py` 验证，再重启 `dev_up.sh`。

@@ -39,6 +39,59 @@ TITLE_TO_BOOK_ID: dict[str, int] = {
 }
 
 SEARCH_KEYS = ("找", "查", "搜", "检索", "馆藏", "有哪些", "有没有", "推荐")
+
+# 馆藏里真实的 category 值（13 个），以及用户可能说的同义词。
+# 真实大模型靠语义就能判断，mock 只能靠词表 —— 这只是"离线演示不露怯"的补丁。
+CATEGORY_ALIASES: dict[str, tuple[str, ...]] = {
+    "文学": ("文学", "小说", "名著", "散文"),
+    "历史": ("历史", "史书", "朝代"),
+    "计算机": ("计算机", "编程", "程序", "开发", "技术", "代码"),
+    "少儿": ("少儿", "儿童", "童话", "绘本"),
+    "科普": ("科普", "科学", "百科"),
+    "经济管理": ("经济", "管理", "商业", "金融"),
+    "哲学": ("哲学",),
+    "心理": ("心理",),
+    "生活": ("生活", "美食", "旅行", "手工"),
+    "传记": ("传记", "名人", "自传"),
+    "艺术": ("艺术", "音乐", "绘画", "设计"),
+    "教育": ("教育", "教学"),
+    "社科": ("社科", "社会", "社会学"),
+}
+
+# 「想找书」的问法提示词：命中后尝试抽取主题
+SEARCH_HINTS = (
+    "找", "查", "搜", "检索", "馆藏", "有哪些", "有没有", "推荐", "有什么",
+    "书吗", "的书", "类的书", "想读", "看看", "想找", "借本",
+)
+
+# 从「有地理类的书吗」里抽出「地理」；从「推荐几本心理学的书」里抽出「心理学」
+_TOPIC_PATTERN = re.compile(
+    r"(?:有没有|有哪些|有|推荐|想看|想读|想找|帮我找|帮我查|找|查|搜)?\s*"
+    r"([\u4e00-\u9fa5A-Za-z]{2,6})"
+    r"(?:类|类型|方面的|相关的)?的?(?:书|图书|小说|读物)"
+)
+
+
+def _extract_topic(text: str) -> str | None:
+    """抽取「X 类的书」里的 X；抽不到返回 None。"""
+    match = _TOPIC_PATTERN.search(text)
+    if not match:
+        return None
+    topic = match.group(1).strip()
+    for noise in ("有没有", "有哪些", "什么", "哪些", "推荐", "有"):
+        topic = topic.replace(noise, "")
+    # 抽出来的可能是「地理类的」「文学类」这类带后缀的短语，去掉尾部修饰词
+    topic = topic.strip("的类书吗呢啊呀型方面")
+    return topic.strip() or None
+
+
+def _category_of(topic: str) -> str | None:
+    """把主题词映射到真实分类；映射不到返回 None（那就走关键词检索）。"""
+    for category, words in CATEGORY_ALIASES.items():
+        if any(word in topic for word in words):
+            return category
+    return None
+
 MY_BORROWS_KEYS = ("我的借阅", "在借", "借了什么", "还没还", "逾期", "罚金", "该还", "到期")
 RETURN_KEYS = ("还书", "归还", "返还")
 RESERVE_KEYS = ("预约", "排队")
@@ -208,13 +261,22 @@ class MockChatModel(BaseChatModel):
             return [_tool_chunk("search_books", {"keyword": _extract_keyword(user_text)}, "call_mock_1")]
         if _contains_any(user_text, DETAIL_KEYS):
             return [_tool_chunk("get_book_detail", {"bookId": _extract_book_id(user_text)}, "call_mock_1")]
+        # 「有地理类的书吗」「推荐几本心理学的书」：先抽主题，再决定按分类还是按关键词检索
+        if _contains_any(user_text, SEARCH_HINTS):
+            topic = _extract_topic(user_text)
+            if topic:
+                category = _category_of(topic)
+                payload = {"category": category} if category else {"keyword": topic}
+                return [_tool_chunk("search_books", payload, "call_mock_1")]
         if _contains_any(user_text, SEARCH_KEYS):
             keyword = _extract_keyword(user_text)
             return [_tool_chunk("search_books", {"keyword": keyword}, "call_mock_1")]
 
         text = (
-            "你好，我是云阁图书馆智能助手。我可以帮你找书、查看我的借阅、"
-            "借书、还书或预约图书，直接告诉我你想做什么就好。"
+            "（当前是离线 Mock 模式，我只能按内置关键词应答，并不是真的大模型）"
+            "这句我没听懂。你可以这样问：**有文学类的书吗**、**我的借阅**、"
+            "**帮我借红楼梦**、**我要还书**。"
+            "想要真正的自然语言理解，请在 `.env` 里配置 `LLM_PROVIDER` 与 API Key 后重启 AI 服务。"
         )
         return list(_text_chunks(text))
 
