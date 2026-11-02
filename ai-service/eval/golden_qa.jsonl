@@ -1,0 +1,85 @@
+{"id": "book-001", "question": "《宇宙奇趣全集》这本书的作者是谁？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["宇宙奇趣全集", "伊塔洛·卡尔维诺"], "match": "all", "should_refuse": false}
+{"id": "book-002", "question": "《重构：改善既有代码的设计》属于哪个分类？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["重构：改善既有代码的设计", "计算机"], "match": "all", "should_refuse": false}
+{"id": "book-003", "question": "《时间简史》现在还有库存吗？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["时间简史"], "match": "all", "should_refuse": false}
+{"id": "book-004", "question": "《大头儿子和小头爸爸》这本书的作者是谁？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["大头儿子和小头爸爸", "郑春华"], "match": "all", "should_refuse": false}
+{"id": "book-005", "question": "《社会契约论》属于哪个分类？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["社会契约论", "社科"], "match": "all", "should_refuse": false}
+{"id": "book-006", "question": "《沉思录》现在还有库存吗？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["沉思录"], "match": "all", "should_refuse": false}
+{"id": "book-007", "question": "《资本论》这本书的作者是谁？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["资本论", "卡尔·马克思"], "match": "all", "should_refuse": false}
+{"id": "book-008", "question": "《围城》属于哪个分类？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["围城", "文学"], "match": "all", "should_refuse": false}
+{"id": "book-009", "question": "《程序员面试金典》现在还有库存吗？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["程序员面试金典"], "match": "all", "should_refuse": false}
+{"id": "book-010", "question": "《哈利·波特与密室》这本书的作者是谁？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["哈利·波特与密室", "J.K.罗琳"], "match": "all", "should_refuse": false}
+{"id": "book-011", "question": "《罗马帝国衰亡史》属于哪个分类？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["罗马帝国衰亡史", "历史"], "match": "all", "should_refuse": false}
+{"id": "book-012", "question": "《鲁迅全集（第3卷）》现在还有库存吗？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["鲁迅全集（第3卷）"], "match": "all", "should_refuse": false}
+{"id": "book-013", "question": "《蒙古帝国史》这本书的作者是谁？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["蒙古帝国史", "雷纳·格鲁塞"], "match": "all", "should_refuse": false}
+{"id": "book-014", "question": "《Java核心技术》属于哪个分类？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["Java核心技术", "计算机"], "match": "all", "should_refuse": false}
+{"id": "book-015", "question": "《世界是平的》现在还有库存吗？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["世界是平的"], "match": "all", "should_refuse": false}
+{"id": "book-016", "question": "《曾国藩家书》这本书的作者是谁？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["曾国藩家书", "曾国藩"], "match": "all", "should_refuse": false}
+{"id": "book-017", "question": "《史蒂夫·乔布斯传》属于哪个分类？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["史蒂夫·乔布斯传", "传记"], "match": "all", "should_refuse": false}
+{"id": "book-018", "question": "《新概念英语》现在还有库存吗？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["新概念英语"], "match": "all", "should_refuse": false}
+{"id": "book-019", "question": "《庄子今注今译》这本书的作者是谁？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["庄子今注今译", "陈鼓应"], "match": "all", "should_refuse": false}
+{"id": "book-020", "question": "《全球通史》属于哪个分类？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["全球通史", "历史"], "match": "all", "should_refuse": false}
+{"id": "book-021", "question": "《考研英语阅读》现在还有库存吗？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["考研英语阅读"], "match": "all", "should_refuse": false}
+{"id": "book-022", "question": "《董明珠：倔强营销的背后》这本书的作者是谁？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["董明珠：倔强营销的背后", "郭宏文"], "match": "all", "should_refuse": false}
+{"id": "book-023", "question": "《反脆弱》属于哪个分类？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["反脆弱", "经济管理"], "match": "all", "should_refuse": false}
+{"id": "book-024", "question": "《夏洛的网》现在还有库存吗？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["夏洛的网"], "match": "all", "should_refuse": false}
+{"id": "book-025", "question": "《丝绸之路：一部全新的世界史》这本书的作者是谁？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["丝绸之路：一部全新的世界史", "彼得·弗兰科潘"], "match": "all", "should_refuse": false}
+{"id": "book-026", "question": "《国富论》属于哪个分类？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["国富论", "社科"], "match": "all", "should_refuse": false}
+{"id": "book-027", "question": "《1Q84》现在还有库存吗？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["1Q84"], "match": "all", "should_refuse": false}
+{"id": "book-028", "question": "《大败局》这本书的作者是谁？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["大败局", "吴晓波"], "match": "all", "should_refuse": false}
+{"id": "book-029", "question": "《人工智能：一种现代的方法》属于哪个分类？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["人工智能：一种现代的方法", "计算机"], "match": "all", "should_refuse": false}
+{"id": "book-030", "question": "《生死疲劳》现在还有库存吗？", "category": "book", "expected_source_types": ["book"], "expected_keywords": ["生死疲劳"], "match": "all", "should_refuse": false}
+{"id": "rule-001", "question": "一个人最多可以同时借几本书？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["最多", "5"], "match": "any", "should_refuse": false}
+{"id": "rule-002", "question": "一本书一次可以借多久？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["30", "天"], "match": "any", "should_refuse": false}
+{"id": "rule-003", "question": "一本书最多可以续借几次？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["续借", "1"], "match": "any", "should_refuse": false}
+{"id": "rule-004", "question": "每次续借可以延长多少天？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["15", "天"], "match": "any", "should_refuse": false}
+{"id": "rule-005", "question": "逾期罚金每天多少钱？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["罚金", "0.2"], "match": "any", "should_refuse": false}
+{"id": "rule-006", "question": "逾期罚金最高封顶多少？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["封顶", "20.0"], "match": "any", "should_refuse": false}
+{"id": "rule-007", "question": "最多可以同时预约几本书？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["预约", "3"], "match": "any", "should_refuse": false}
+{"id": "rule-008", "question": "预约到书后保留几天，过期会怎样？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["3", "天"], "match": "any", "should_refuse": false}
+{"id": "rule-009", "question": "逾期罚金是怎么计算的，能举个例子吗？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["罚金"], "match": "any", "should_refuse": false}
+{"id": "rule-010", "question": "借阅到期了还没还，会有什么后果？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["逾期"], "match": "any", "should_refuse": false}
+{"id": "rule-011", "question": "续借有什么限制条件？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["续借"], "match": "any", "should_refuse": false}
+{"id": "rule-012", "question": "书还回来以后，预约队列会怎么处理？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["预约"], "match": "any", "should_refuse": false}
+{"id": "rule-013", "question": "当前借阅规则里，借期和续借期分别是多少？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["30", "15"], "match": "any", "should_refuse": false}
+{"id": "rule-014", "question": "罚金是按天算还是按本算？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["罚金"], "match": "any", "should_refuse": false}
+{"id": "rule-015", "question": "待取书的保留时长是多少，超时怎么顺延？", "category": "rule", "expected_source_types": ["rule"], "expected_keywords": ["3", "顺延"], "match": "any", "should_refuse": false}
+{"id": "faq-001", "question": "第一次借书要怎么操作？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["第一次借书要", "借阅", "归还"], "match": "any", "should_refuse": false}
+{"id": "faq-002", "question": "一次能借几本书？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["一次能借几本", "续借", "借阅"], "match": "any", "should_refuse": false}
+{"id": "faq-003", "question": "借期是多久？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["借期是多久？", "续借", "罚金"], "match": "any", "should_refuse": false}
+{"id": "faq-004", "question": "可以续借吗？续借规则是什么？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["可以续借吗？", "预约", "续借"], "match": "any", "should_refuse": false}
+{"id": "faq-005", "question": "逾期罚金怎么算？有封顶吗？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["逾期罚金怎么", "罚金"], "match": "any", "should_refuse": false}
+{"id": "faq-006", "question": "预约是怎么排队的？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["预约是怎么排", "预约"], "match": "any", "should_refuse": false}
+{"id": "faq-007", "question": "预约的书到馆后保留几天？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["预约的书到馆", "预约"], "match": "any", "should_refuse": false}
+{"id": "faq-008", "question": "预约超时未取会怎样？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["预约超时未取", "预约", "罚金"], "match": "any", "should_refuse": false}
+{"id": "faq-009", "question": "罚金怎么交？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["罚金怎么交？", "续借", "罚金"], "match": "any", "should_refuse": false}
+{"id": "faq-010", "question": "账号密码忘了怎么办？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["账号密码忘了"], "match": "any", "should_refuse": false}
+{"id": "faq-011", "question": "管理员能做什么？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["管理员能做什", "预约", "续借"], "match": "any", "should_refuse": false}
+{"id": "faq-012", "question": "馆藏图书是怎么分类的？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["馆藏图书是怎"], "match": "any", "should_refuse": false}
+{"id": "faq-013", "question": "ISBN 是什么？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["ISBN 是"], "match": "any", "should_refuse": false}
+{"id": "faq-014", "question": "可以让别人代借吗？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["可以让别人代", "借阅"], "match": "any", "should_refuse": false}
+{"id": "faq-015", "question": "书丢了怎么处理？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["书丢了怎么处", "借阅", "归还"], "match": "any", "should_refuse": false}
+{"id": "faq-016", "question": "借书数量到上限了怎么办？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["借书数量到上", "续借", "罚金"], "match": "any", "should_refuse": false}
+{"id": "faq-017", "question": "怎么查自己的借阅记录？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["怎么查自己的", "续借", "罚金"], "match": "any", "should_refuse": false}
+{"id": "faq-018", "question": "可以跨馆借还吗？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["可以跨馆借还"], "match": "any", "should_refuse": false}
+{"id": "faq-019", "question": "最多能预约几本？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["最多能预约几", "预约"], "match": "any", "should_refuse": false}
+{"id": "faq-020", "question": "续借为什么会失败？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["续借为什么会", "预约", "续借"], "match": "any", "should_refuse": false}
+{"id": "faq-021", "question": "逾期会有什么影响？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["逾期会有什么", "续借", "罚金"], "match": "any", "should_refuse": false}
+{"id": "faq-022", "question": "可以推荐采购图书吗？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["可以推荐采购"], "match": "any", "should_refuse": false}
+{"id": "faq-023", "question": "图书馆的开放时间是什么？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["图书馆的开放", "借阅"], "match": "any", "should_refuse": false}
+{"id": "faq-024", "question": "管理员可以修改借阅规则吗？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["管理员可以修", "预约", "续借"], "match": "any", "should_refuse": false}
+{"id": "faq-025", "question": "怎么批量导入图书？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["怎么批量导入"], "match": "any", "should_refuse": false}
+{"id": "faq-026", "question": "读者账号有哪些状态？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["读者账号有哪", "预约"], "match": "any", "should_refuse": false}
+{"id": "faq-027", "question": "超期未还的书会怎么处理？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["超期未还的书", "罚金", "归还"], "match": "any", "should_refuse": false}
+{"id": "faq-028", "question": "能举个罚金计算的例子吗？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["能举个罚金计", "罚金"], "match": "any", "should_refuse": false}
+{"id": "faq-029", "question": "怎么取消预约？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["怎么取消预约", "预约"], "match": "any", "should_refuse": false}
+{"id": "faq-030", "question": "借阅记录会保留多久？", "category": "faq", "expected_source_types": ["faq"], "expected_keywords": ["借阅记录会保", "借阅", "归还"], "match": "any", "should_refuse": false}
+{"id": "refuse-001", "question": "图书馆的 WiFi 密码是多少？", "category": "refuse", "expected_source_types": [], "expected_keywords": [], "match": "any", "should_refuse": true}
+{"id": "refuse-002", "question": "馆长叫什么名字、年薪多少？", "category": "refuse", "expected_source_types": [], "expected_keywords": [], "match": "any", "should_refuse": true}
+{"id": "refuse-003", "question": "帮我推荐几只明天会涨的股票", "category": "refuse", "expected_source_types": [], "expected_keywords": [], "match": "any", "should_refuse": true}
+{"id": "refuse-004", "question": "明天北京天气怎么样？", "category": "refuse", "expected_source_types": [], "expected_keywords": [], "match": "any", "should_refuse": true}
+{"id": "refuse-005", "question": "这本书的作者有没有犯罪记录？", "category": "refuse", "expected_source_types": [], "expected_keywords": [], "match": "any", "should_refuse": true}
+{"id": "refuse-006", "question": "图书馆大楼是哪一年建的、造价多少？", "category": "refuse", "expected_source_types": [], "expected_keywords": [], "match": "any", "should_refuse": true}
+{"id": "refuse-007", "question": "帮我写一段 Python 快速排序代码", "category": "refuse", "expected_source_types": [], "expected_keywords": [], "match": "any", "should_refuse": true}
+{"id": "refuse-008", "question": "最近有什么好看的电影推荐？", "category": "refuse", "expected_source_types": [], "expected_keywords": [], "match": "any", "should_refuse": true}
+{"id": "refuse-009", "question": "这本书的电子版下载地址在哪里？", "category": "refuse", "expected_source_types": [], "expected_keywords": [], "match": "any", "should_refuse": true}
+{"id": "refuse-010", "question": "读者卡里的余额可以提现吗？", "category": "refuse", "expected_source_types": [], "expected_keywords": [], "match": "any", "should_refuse": true}

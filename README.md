@@ -69,12 +69,14 @@ cd backend && mvn spring-boot:run
 | 验证项 | 命令 | 结果 |
 | --- | --- | --- |
 | 后端单测（含原有业务测试） | `cd backend && mvn -B clean test` | 71 passed |
-| AI 服务单测 | `ai-service/.venv/bin/python -m pytest ai-service -q` | 111 passed |
+| AI 服务单测 | `ai-service/.venv/bin/python -m pytest ai-service -q` | **158 passed** |
 | 端到端（16 项断言：身份透传/人在回路/真实落库） | `ai-service/.venv/bin/python scripts/e2e_ai.py` | 全绿 |
 | 会话跨重启持久化 | `ai-service/.venv/bin/python ai-service/scripts/verify_redis_persistence.py` | 重启后历史仍在 |
 | 界面截图 | `node scripts/ui_screenshot.mjs` | 生成 4 张关键状态图 |
 | 真实模型兼容性（填 Key 后） | `ai-service/.venv/bin/python scripts/check_llm.py` | 连通性 / function calling / 首 token 延迟 |
 | 只读压测 | `python3 docs/loadtest.py --token <token> --paths "/api/books" --levels 10,25 --duration 15` | 见 `docs/压测报告.md` |
+| RAG 语料构建（离线幂等） | `cd ai-service && .venv/bin/python scripts/build_corpus.py` | 535 块（book 500 / rule 5 / faq 30） |
+| RAG 检索评测（离线，无需 Key） | `cd ai-service && .venv/bin/python scripts/run_eval.py` | Recall@5 **0.973** / MRR **0.859**，见 [docs/RAG评测报告.md](docs/RAG评测报告.md) |
 
 > 当前默认 `LLM_PROVIDER=mock`（离线、无需 Key、回复确定性），方便演示与 CI；换成 DeepSeek/Qwen 只需改 `.env` 两行。
 

@@ -10,9 +10,9 @@
 |---|---|
 | 最后更新 | 2026-11-02 |
 | 仓库 | `springboot_vue_system`（云阁图书借阅系统 + AI 服务） |
-| 当前进度 | **W0 / W1 / W2 已完成；W3 / W4 待办** |
+| 当前进度 | **W0 / W1 / W2 已完成；W3 进行中（检索基线已交付）；W4 待办** |
 | 已完成提交 | 9 个（`37a459c` → `a2e6f67`，工作区干净） |
-| 测试基线 | 后端 71 个单测、AI 服务 111 个单测、端到端 16 项断言、UI 18 项断言 |
+| 测试基线 | 后端 71 个单测、AI 服务 **158** 个单测、端到端 16 项断言、UI 18 项断言 |
 | 阻塞项 | W3 开工前需定 embedding 路线（见 §9） |
 
 **状态图例**：`✅ 已完成` / `🟡 进行中` / `⬜ 待办` / `⛔ 阻塞` / `💤 可选（有余量再做）`
@@ -31,7 +31,7 @@ W0 基建 ──✅──▶ W1 链路打通 ──✅──▶ W2 可演示 ─
 | **W0** | 工地平整 | 让项目具备「能被评估」的工程底子 | git 有提交历史、无密钥入库、缺的压测脚本补上、docker-compose 可校验 | ✅ 已完成 |
 | **W1** | 链路打通 | 自然语言 → AI 服务 → 真实业务系统 | 一句「帮我借红楼梦」能走到确认卡，确认后真实落库 | ✅ 已完成 |
 | **W2** | 可演示 | 浏览器里能点、能截图、能换会话 | 无头 Chrome 自动走查通过 + 6 张截图 + Redis 会话可跨重启 | ✅ 已完成 |
-| **W3** | 有智商 | 知识问答带引用、能拒答、有评测数字 | 一份包含 recall / faithfulness / 延迟的 RAG 评测报告 | ⬜ 待办 |
+| **W3** | 有智商 | 知识问答带引用、能拒答、有评测数字 | 一份包含 recall / faithfulness / 延迟的 RAG 评测报告 | 🟡 进行中 |
 | **W4** | 能投简历 | 可观测、CI、成本数据、文档与 Demo | 陌生人 10 分钟能跑起来 + 一份 3 分钟演示视频/GIF | ⬜ 待办 |
 
 **工作量口径**：W0–W2 实际投入约 1 个工作日（多 Agent 并行）+ 若干轮联调修复；
@@ -187,13 +187,14 @@ W3 预计 5.5 人日、W4 预计 5 人日（按每周 15–20 小时 ≈ 2.5 周
 > **开工前必须先定**：embedding 路线（§9 决策项 1），否则 W3-2/W3-4 无法选型。
 
 ### W3-1 知识语料构建与切分
-- **状态**：⬜ 待办　**预估**：0.5 人日　**依赖**：无
+- **状态**：✅ 已完成（2026-11-02）　**预估**：0.5 人日　**依赖**：无
 - **目标**：把"能查到的结构化数据"变成"能语义检索的文档"
 - **交付物**
   - `ai-service/scripts/build_corpus.py`：从 MySQL 抽取 500 本书（书名/作者/分类/简介/库存）+ 借阅规则 + 30 条 FAQ，生成统一 JSONL
   - 切分策略：书籍按"书名+作者+分类+简介"整段（短文本不切）；规则/FAQ 按语义段落切，单块 ≤ 400 字
   - 每块带元数据：`source_type`(book/rule/faq)、`book_id`、`title`、`category`、`url`（前端跳转用）
 - **验收**：语料条数可统计（≈500 + 规则若干 + 30）；随机抽 10 条人工检查切片无断句、元数据齐全
+- **证据**：`ai-service/scripts/build_corpus.py`；实跑 **book 500 / rule 5 / faq 30 = 535 块**（204 KB），连续两次构建 sha256 一致
 - **涉及文件**：`ai-service/scripts/build_corpus.py`、`ai-service/data/corpus/*.jsonl`（是否入库需定，建议入库小样本 + 生成脚本）
 - **风险**：500 本书简介较短，可能不适合切分 → 以"不切"为默认
 
@@ -209,7 +210,9 @@ W3 预计 5.5 人日、W4 预计 5 人日（按每周 15–20 小时 ≈ 2.5 周
 - **风险**：embedding 维度与模型必须对应（`text-embedding-v3` 1024 / `bge-m3` 1024）；换模型需重建索引 → 写入 README
 
 ### W3-3 混合检索（向量 + 关键词）
-- **状态**：⬜ 待办　**预估**：0.5 人日　**依赖**：W3-2
+- **状态**：🟡 进行中（**BM25 基线档已完成**，向量 + RRF 融合待 W3-2）　**预估**：0.5 人日　**依赖**：W3-2
+- **已交付**：`ai-service/app/rag/{tokenizer,bm25,corpus,service}.py`；零依赖中文 unigram+bigram 分词；BM25 k1=1.5/b=0.75 + 非负 IDF；语料缺失降级为空结果不抛异常
+- **基线实测**：Recall@5 **0.973** / MRR **0.859**（book 1.000/0.951、faq 1.000/1.000、rule 0.867/0.394），详见 `docs/RAG评测报告.md`
 - **目标**：解决"书名精确词用向量召回会翻车"的问题
 - **交付物**：`ai-service/app/rag/retriever.py`
   - 向量检索 top-20（余弦）
@@ -240,7 +243,9 @@ W3 预计 5.5 人日、W4 预计 5 人日（按每周 15–20 小时 ≈ 2.5 周
 - **风险**：模型不遵守引用格式 → 用 few-shot + 后处理校验（无引用则补"（无引用来源）"）
 
 ### W3-6 评测集与评测报告 ⭐本周最高价值
-- **状态**：⬜ 待办　**预估**：1.5 人日　**依赖**：W3-5
+- **状态**：🟡 进行中（**评测集 + 检索层评测已完成**；答案层 RAGAS 待真实模型）　**预估**：1.5 人日　**依赖**：W3-5
+- **已交付**：`ai-service/scripts/gen_golden_qa.py`（85 条：book 30 / faq 30 / rule 15 / refuse 10）、`ai-service/scripts/run_eval.py`（Recall@k / MRR / 拒答负样本分数分布，支持 `--min-recall` 作 CI 门禁）、`docs/RAG评测报告.md` v0.1
+- **基线数字**：总体 Recall@5 0.973 / MRR 0.859；**rule 类 MRR 仅 0.394**（被同形 FAQ 抢位）——已作为 badcase 记录，是 W3-4 重排的主要靶子
 - **目标**：把"效果不错"变成可复核的数字，这是简历差异化的根
 - **交付物**
   - `ai-service/eval/golden_qa.jsonl`：60–80 条（规则 20 / 馆藏 25 / FAQ 15 / 应拒答 10），带 `question / ground_truth / expected_source_ids`
@@ -395,6 +400,13 @@ ai-service/.venv/bin/python ai-service/scripts/verify_redis_persistence.py
 # 界面截图 + 「新对话」回归检查
 node scripts/ui_screenshot.mjs
 
+# RAG 语料构建（离线，直连 MySQL 构建；幂等）
+cd ai-service && .venv/bin/python scripts/build_corpus.py
+
+# RAG 评测集生成 + 检索评测（离线，无需 Key；--min-recall 可作 CI 门禁）
+cd ai-service && .venv/bin/python scripts/gen_golden_qa.py
+cd ai-service && .venv/bin/python scripts/run_eval.py --min-recall 0.95
+
 # 真实模型兼容性（填 Key 后）
 ai-service/.venv/bin/python scripts/check_llm.py
 
@@ -416,5 +428,8 @@ cd frontend && npm run build
 | 2026-11-01 | W2 完成（6 张截图 / Redis 会话 / 三处缺陷修复） | `d6306a1`、`0ad0fd4`、`a2e6f67` |
 | 2026-11-01 | 安全修复：隔离库收敛到回环地址 | `b53b45b` |
 | 2026-11-02 | 本文档创建 | — |
+| 2026-11-02 | W3-1 完成（535 块语料，幂等） | `ai-service/data/corpus/knowledge.jsonl` |
+| 2026-11-02 | W3-3 BM25 基线完成（Recall@5 0.973 / MRR 0.859） | `docs/RAG评测报告.md` |
+| 2026-11-02 | W3-6 评测集与检索评测完成（85 条用例） | `ai-service/eval/` |
 | 待定 | W3 开工（需决策项 1/2） | ⬜ |
 | 待定 | W4 开工 | ⬜ |
