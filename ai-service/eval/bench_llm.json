@@ -1,0 +1,23 @@
+{
+  "provider": "deepseek",
+  "model": "deepseek-chat",
+  "samples_requested": 12,
+  "samples_ok": 12,
+  "failures": 0,
+  "ttft_ms": {
+    "p50": 896.9,
+    "p95": 1186.0,
+    "min": 725.7,
+    "max": 1186.0
+  },
+  "total_ms": {
+    "p50": 1701.0,
+    "p95": 2145.2,
+    "avg": 1701.6
+  },
+  "chars_per_second_avg": 84.2,
+  "tokens": {
+    "prompt_avg": 22.0,
+    "completion_avg": 93.2
+  }
+}
