@@ -105,14 +105,30 @@ services:
       retries: 10
       start_period: 15s
 
-  # ---- W4 阶段启用：Langfuse 全链路追踪 ----
-  # langfuse:
-  #   image: ${DOCKER_MIRROR:-docker.io}/langfuse/langfuse:2
-  #   ports: ["127.0.0.1:3000:3000"]
-  #   environment:
-  #     DATABASE_URL: postgresql://library:library@pgvector:5432/langfuse
-  #     NEXTAUTH_SECRET: local-dev-secret
-  #     SALT: local-dev-salt
+  # ---- Langfuse 全链路追踪（W4-1，默认不启动）----
+  # 用法：
+  #   1) 在 pgvector 里建库：docker compose exec pgvector psql -U library -d library_ai -c "CREATE DATABASE langfuse;"
+  #   2) docker compose --profile observability up -d langfuse
+  #   3) 打开 http://127.0.0.1:3000 注册账号 → 创建 project 拿 public/secret key
+  #   4) 写入 .env：LANGFUSE_ENABLED=true / LANGFUSE_HOST=http://127.0.0.1:3000 / LANGFUSE_PUBLIC_KEY / LANGFUSE_SECRET_KEY
+  #   5) 重启 AI 服务：bash scripts/dev_down.sh && bash scripts/dev_up.sh
+  # 说明：Langfuse v2 只需要 Postgres；本机 Docker 拉镜像受限时未做真机验证（见 docs/可观测性说明.md）
+  langfuse:
+    image: ${DOCKER_MIRROR:-docker.io}/langfuse/langfuse:2
+    container_name: library-langfuse
+    profiles: ["observability"]
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      DATABASE_URL: postgresql://${PGVECTOR_USER:-library}:${PGVECTOR_PASSWORD:-library}@pgvector:5432/langfuse
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-local-dev-secret-please-change}
+      SALT: ${LANGFUSE_SALT:-local-dev-salt-please-change}
+      NEXTAUTH_URL: http://127.0.0.1:3000
+      TELEMETRY_ENABLED: "false"
+    depends_on:
+      pgvector:
+        condition: service_healthy
 
 volumes:
   mysql-data:

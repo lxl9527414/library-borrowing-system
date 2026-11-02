@@ -59,13 +59,27 @@ class RunContext:
         """节点内推送自定义事件：优先官方 stream_writer，保证与图执行顺序一致。
 
         writer 不可用时（例如在节点外调用）退回内存队列，避免丢事件。
+        所有事件都经过这里，因此可观测性埋点也放在这里（业务/图代码零侵入）。
         """
+        payload = data or {}
         try:
             writer = get_stream_writer()
         except RuntimeError:
-            self.emitter.emit(event, data)
-            return
-        writer({"event": event, "data": data or {}})
+            self.emitter.emit(event, payload)
+        else:
+            writer({"event": event, "data": payload})
+        # 埋点失败绝不影响主链路（NoopTracer 在未启用时是空实现）
+        try:
+            from app.obs.langfuse_tracer import get_tracer
+
+            get_tracer().on_agent_event(
+                event,
+                payload,
+                trace_id=self.trace_id,
+                session_id=self.session_id,
+            )
+        except Exception:  # noqa: BLE001
+            pass
 
     def add_usage(self, prompt_tokens: int, completion_tokens: int) -> None:
         self.stats.add_usage(prompt_tokens, completion_tokens)

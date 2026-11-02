@@ -227,6 +227,13 @@ java -jar backend/target/library-server.jar
 
 ---
 
+## 安全与凭据
+
+- 仓库内**不含任何密钥**：`.env`、`deploy/credentials.local` 均被 gitignore；CI 有 `secrets` job 扫描 `scripts/check_secrets.sh`
+- 模型 Key 只从环境变量读取，代码/日志/文档不打印
+- 生产凭据只放服务器 `/opt/library/config/library.env`（systemd `EnvironmentFile`）
+- ⚠️ 本项目调试过程中曾把线上明文密码打印到会话记录，**已列入轮换清单**，见 [docs/凭据轮换清单.md](docs/凭据轮换清单.md)
+
 ## 已知限制（如实列出）
 
 1. **重排未超过纯向量**：当前评测集上 vector MRR 0.916 > 重排后 0.902，默认关闭重排；原因（rule/FAQ 多源等价、8% 调用失败）见评测报告 §11。
@@ -252,3 +259,5 @@ java -jar backend/target/library-server.jar
 | [docs/云阁图书管理系统技术说明.md](docs/云阁图书管理系统技术说明.md) | 原有业务系统技术说明 |
 | [docs/简历素材.md](docs/简历素材.md) | 简历 bullets、数字卡、STAR 模板 |
 | [docs/面试问答.md](docs/面试问答.md) | 20 个高频追问的回答要点 |
+| [docs/可观测性说明.md](docs/可观测性说明.md) | Langfuse 埋点方式、启用步骤、兜底行为 |
+| [docs/凭据轮换清单.md](docs/凭据轮换清单.md) | 需要轮换的账号、步骤、验证清单 |

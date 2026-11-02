@@ -83,8 +83,13 @@ class Settings(BaseSettings):
     # ---- Web ----
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
-    # ---- 可观测（W4 启用，W1 仅占位）----
+    # ---- 可观测（W4：Langfuse HTTP ingestion 接入）----
     langfuse_enabled: bool = False
+    langfuse_host: str = "http://127.0.0.1:3000"
+    langfuse_public_key: str = ""
+    langfuse_secret_key: str = ""
+    # 采样率 0~1（演示默认全量；生产可调到 0.1 控制上报量）
+    langfuse_sample_rate: float = 1.0
 
     # ------------------------------------------------------------------
     # 派生属性

@@ -38,6 +38,16 @@ env:
   PIP_NO_INPUT: "1"
 
 jobs:
+  secrets:
+    name: 密钥泄漏扫描
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 扫描疑似明文凭据
+        run: bash scripts/check_secrets.sh
   # -------------------------------------------------------------------
   # 1) 后端：JDK 17（本机默认 JDK 27，CI 显式固定 17，与 pom.xml 的 java.version 一致）
   # -------------------------------------------------------------------

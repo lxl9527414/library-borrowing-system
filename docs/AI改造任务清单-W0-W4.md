@@ -283,7 +283,7 @@ W3 预计 5.5 人日、W4 预计 5 人日（按每周 15–20 小时 ≈ 2.5 周
 > **本周目标**：让一个陌生人（面试官）**10 分钟能跑起来**、看得见数据、看得出工程能力。
 
 ### W4-1 Langfuse 全链路追踪
-- **状态**：⬜ 待办　**预估**：1 人日　**依赖**：W3 完成（有 RAG 才有意思）
+- **状态**：🟡 进行中（代码已接入并测试；本机无法起 Langfuse，未做真机验证）　**预估**：1 人日　**依赖**：W3 完成（有 RAG 才有意思）
 - **交付物**：`docker-compose.yml` 启用 Langfuse；`ai-service/app/obs/langfuse.py` 接入 trace（每次请求：prompt、工具调用、检索块、token、成本、延迟）；看板截图
 - **验收**：Langfuse 里能看到一次完整对话的 span 树（LLM → tool → LLM）；截图入库
 - **证据目标**：`docs/screenshots/08-langfuse-trace.png`
@@ -315,7 +315,7 @@ W3 预计 5.5 人日、W4 预计 5 人日（按每周 15–20 小时 ≈ 2.5 周
 - **价值**：2026 高频新词，且是对已有工具的薄封装，投入产出比高
 
 ### W4-5 凭据治理与轮换
-- **状态**：⬜ 待办　**预估**：0.5 人日　**依赖**：无（越早越好，见 §9 决策项 4）
+- **状态**：✅ 已完成（2026-11-02）　**预估**：0.5 人日　**依赖**：无（越早越好，见 §9 决策项 4）
 - **交付物**
   - `deploy/credentials.local` → 改为部署时注入（`.env` / systemd `EnvironmentFile`）
   - `docs/凭据轮换清单.md`：需轮换的账号、改法、改完要同步的位置
@@ -468,5 +468,7 @@ cd frontend && npm run build
 | 2026-11-02 | 真模型重拍截图（徽标显示 deepseek）+ 确认卡片书名回填修复 | `docs/screenshots/01-05` |
 | 2026-11-02 | W4-7 完成：简历素材 + 20 条面试问答 + README 作品集化 + ADR | `docs/简历素材.md`、`docs/面试问答.md`、`docs/ADR.md` |
 | 2026-11-02 | W4-8 完成：`scripts/demo.sh` 一键演示 + CDP 录屏 + Pillow 合成 GIF | `docs/demo.gif`（1.4 MB） |
+| 2026-11-02 | W4-1 代码完成：Langfuse ingestion 埋点 + 熔断/采样 + 7 个离线测试（真机未验证） | `ai-service/app/obs/langfuse_tracer.py`、`docs/可观测性说明.md` |
+| 2026-11-02 | W4-5 完成：凭据轮换清单 + 模板 + 密钥扫描脚本 + CI 门禁 | `docs/凭据轮换清单.md`、`scripts/check_secrets.sh` |
 | 待定 | W3 开工（需决策项 1/2） | ⬜ |
 | 待定 | W4 开工 | ⬜ |
