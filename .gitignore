@@ -42,3 +42,4 @@ ai-service/logs/
 ai-service/data/models/
 ai-service/data/embeddings/
 deploy/credentials.local.dev
+deploy/credentials.local.*
