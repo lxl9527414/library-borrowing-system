@@ -69,6 +69,19 @@
 
 > 截图由 `scripts/ui_screenshot.mjs` 驱动无头 Chrome 自动走查生成（自写 CDP，不依赖 Playwright），可随时重跑。
 
+## 一键演示（真实模型）
+
+```bash
+bash scripts/demo.sh      # 起依赖 → 走完整流程 → 录制成 docs/demo.gif
+```
+
+演示内容：说「帮我借红楼梦」→ 查馆藏 → **写操作确认卡** → 点确认 → 真实落库 → 问「逾期罚金怎么算」→ **带 [1] 引用的回答 + 来源卡片**。
+
+![演示](docs/demo.gif)
+
+> 录制实现：CDP `Page.startScreencast` 录帧 + Pillow 合成 GIF（**不依赖 ffmpeg**）；
+> 帧去重会合并静止段、保留有变化的帧（`scripts/demo_record.mjs`、`scripts/frames_to_gif.py`）。
+
 ---
 
 ## 快速开始（本地，无需任何 API Key）
@@ -237,3 +250,5 @@ java -jar backend/target/library-server.jar
 | [docs/压测报告.md](docs/压测报告.md) | 业务接口只读压测（QPS/延迟/瓶颈定位） |
 | [docs/单元测试与覆盖率.md](docs/单元测试与覆盖率.md) | 测试与 JaCoCo 覆盖率 |
 | [docs/云阁图书管理系统技术说明.md](docs/云阁图书管理系统技术说明.md) | 原有业务系统技术说明 |
+| [docs/简历素材.md](docs/简历素材.md) | 简历 bullets、数字卡、STAR 模板 |
+| [docs/面试问答.md](docs/面试问答.md) | 20 个高频追问的回答要点 |
