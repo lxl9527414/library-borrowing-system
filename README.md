@@ -17,6 +17,8 @@
 
 在原有业务系统之上新增一层 AI 应用服务，把「借书 / 还书 / 预约 / 查借阅」变成可以用自然语言完成的 Agent 能力。设计原则与接口契约见 [docs/AI-架构与接口契约.md](docs/AI-架构与接口契约.md)。
 
+全量任务拆解（W0–W4，含已完成项的证据与待办项的验收标准）见 [docs/AI改造任务清单-W0-W4.md](docs/AI改造任务清单-W0-W4.md)。
+
 ```text
 Vue3 ──SSE──▶ ai-service（Python + FastAPI + LangGraph）
                     │ 内部工具调用（转发用户 token + X-Internal-Token）
