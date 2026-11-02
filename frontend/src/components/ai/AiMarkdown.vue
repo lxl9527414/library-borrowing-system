@@ -4,30 +4,15 @@
 
 <script setup>
 import { computed } from 'vue'
-import MarkdownIt from 'markdown-it'
-
-// html: false —— 禁止模型输出里的原始 HTML，避免 XSS；markdown-it 会转义尖括号
-const md = new MarkdownIt({
-  html: false,
-  linkify: true,
-  breaks: true,
-})
-
-// 外部链接新窗口打开，并加 noopener
-const defaultLinkOpen =
-  md.renderer.rules.link_open ||
-  ((tokens, index, options, env, self) => self.renderToken(tokens, index, options))
-md.renderer.rules.link_open = (tokens, index, options, env, self) => {
-  tokens[index].attrSet('target', '_blank')
-  tokens[index].attrSet('rel', 'noopener noreferrer')
-  return defaultLinkOpen(tokens, index, options, env, self)
-}
+import { renderMarkdown } from './markdownRenderer'
 
 const props = defineProps({
   content: { type: String, default: '' },
+  // 是否把正文里的 [n] 渲染成可交互引用标记（仅知识问答回答开启）
+  cite: { type: Boolean, default: false },
 })
 
-const rendered = computed(() => md.render(props.content || ''))
+const rendered = computed(() => renderMarkdown(props.content, { cite: props.cite }))
 </script>
 
 <style scoped>

@@ -69,7 +69,7 @@ cd backend && mvn spring-boot:run
 | 验证项 | 命令 | 结果 |
 | --- | --- | --- |
 | 后端单测（含原有业务测试） | `cd backend && mvn -B clean test` | 71 passed |
-| AI 服务单测 | `ai-service/.venv/bin/python -m pytest ai-service -q` | **281 passed** |
+| AI 服务单测 | `ai-service/.venv/bin/python -m pytest ai-service -q` | **312 passed** |
 | 端到端（16 项断言：身份透传/人在回路/真实落库） | `ai-service/.venv/bin/python scripts/e2e_ai.py` | 全绿 |
 | 会话跨重启持久化 | `ai-service/.venv/bin/python ai-service/scripts/verify_redis_persistence.py` | 重启后历史仍在 |
 | 界面截图 | `node scripts/ui_screenshot.mjs` | 生成 4 张关键状态图 |
@@ -78,6 +78,7 @@ cd backend && mvn spring-boot:run
 | RAG 语料构建（离线幂等） | `cd ai-service && .venv/bin/python scripts/build_corpus.py` | 535 块（book 500 / rule 5 / faq 30） |
 | RAG 向量索引（通义 embedding） | `cd ai-service && .venv/bin/python scripts/index_corpus.py --provider dashscope` | 535×1024，18.2 s（幂等） |
 | RAG 检索评测 | `cd ai-service && .venv/bin/python scripts/run_eval.py` | BM25: R@5 0.973/MRR 0.859；向量: 1.000/0.916；混合: 1.000/0.883；BM25+重排: 0.973/0.884。详见 [docs/RAG评测报告.md](docs/RAG评测报告.md) |
+| RAG 端到端（真模型） | `ai-service/.venv/bin/python scripts/e2e_rag.py` | 5 类问题全绿：知识问答带 `[1]` 引用、馆藏类走 search_books、无关问题明确拒答 |
 
 > 当前默认 `LLM_PROVIDER=mock`（离线、无需 Key、回复确定性），方便演示与 CI；换成 DeepSeek/Qwen 只需改 `.env` 两行。
 

@@ -1,7 +1,8 @@
-"""LLM 工具 schema（契约 §3 的 6 个工具）。
+"""LLM 工具 schema（契约 §3 的 7 个工具：6 个业务工具 + 1 个知识检索）。
 
 统一用 OpenAI function calling 的 JSON Schema 格式，便于 mock 与真实模型共用。
-工具名 / 参数以本文件为唯一来源（Java 侧只负责实现 §2 的 HTTP 端点）。
+工具名 / 参数以本文件为唯一来源（Java 侧只负责实现 §2 的 HTTP 端点；
+``search_knowledge`` 走本地 RAG 检索，不经过 Java 后端）。
 """
 
 from __future__ import annotations
@@ -12,7 +13,12 @@ from typing import Any
 WRITE_TOOLS: frozenset[str] = frozenset({"borrow_book", "return_book", "reserve_book"})
 
 # 只读工具
-READ_TOOLS: frozenset[str] = frozenset({"search_books", "get_book_detail", "get_my_borrows"})
+READ_TOOLS: frozenset[str] = frozenset(
+    {"search_books", "get_book_detail", "get_my_borrows", "search_knowledge"}
+)
+
+# search_knowledge 的来源过滤取值（与 data/corpus 的 source_type 对齐）
+KNOWLEDGE_SOURCE_TYPES: tuple[str, ...] = ("book", "rule", "faq")
 
 TOOL_SCHEMAS: list[dict[str, Any]] = [
     {
@@ -51,6 +57,38 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
             "name": "get_my_borrows",
             "description": "查询当前登录用户的在借记录：到期时间、逾期天数、续借次数、罚金。用户问“我借了什么/什么时候还/有没有逾期”时使用。",
             "parameters": {"type": "object", "properties": {}, "required": []},
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_knowledge",
+            "description": (
+                "检索馆藏知识库（借阅规则、罚金标准、预约/取书规则、馆藏图书事实、系统使用流程），"
+                "返回带 citation_no 编号的依据片段。当问题涉及借阅规则、罚金、预约、馆藏事实、"
+                "使用流程时调用；回答时必须用 [编号] 标注依据，不得凭记忆编造规则数值。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "要检索的问题或关键词（中文，尽量保留原问题的关键实体）",
+                    },
+                    "top_k": {
+                        "type": "integer",
+                        "description": "返回条数，默认 5，范围 1~10",
+                        "minimum": 1,
+                        "maximum": 10,
+                    },
+                    "source_types": {
+                        "type": "array",
+                        "description": "可选来源过滤：book=馆藏图书、rule=借阅规则、faq=常见问题；不传则检索全部",
+                        "items": {"type": "string", "enum": list(KNOWLEDGE_SOURCE_TYPES)},
+                    },
+                },
+                "required": ["query"],
+            },
         },
     },
     {

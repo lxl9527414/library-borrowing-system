@@ -10,6 +10,7 @@ export const TOOL_LABELS = {
   borrow_book: '借阅',
   return_book: '归还',
   reserve_book: '预约',
+  search_knowledge: '查知识库',
 }
 
 const ARG_LABELS = {
@@ -18,6 +19,9 @@ const ARG_LABELS = {
   size: '条数',
   bookId: '图书 ID',
   borrowId: '借阅记录 ID',
+  query: '问题',
+  topK: '返回条数',
+  source_types: '来源范围',
 }
 
 /** 工具中文名；未登记的工具名兜底返回原名 */

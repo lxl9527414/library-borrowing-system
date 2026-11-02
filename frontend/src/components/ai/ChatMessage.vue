@@ -14,14 +14,20 @@
       <!-- 用户消息：纯文本渲染，保留换行 -->
       <div v-if="message.role === 'user'" class="msg-bubble user-bubble">{{ message.content }}</div>
 
-      <!-- 助手消息：Markdown + 工具轨迹 + 确认卡 -->
-      <div v-else class="msg-bubble assistant-bubble">
-        <AiMarkdown v-if="message.content" :content="message.content" />
+      <!-- 助手消息：Markdown + 引用来源 + 工具轨迹 + 确认卡 -->
+      <div v-else class="msg-bubble assistant-bubble" @click="onBubbleClick" @keydown="onBubbleKeydown">
+        <AiMarkdown v-if="message.content" :content="message.content" :cite="citations.length > 0" />
         <div v-else-if="message.streaming" class="typing-indicator" aria-label="正在生成回复">
           <span></span><span></span><span></span>
         </div>
         <p v-else-if="message.welcome" class="welcome-tip">
           输入你的问题，或点击下方快捷问题开始。
+        </p>
+
+        <CitationList v-if="citations.length" ref="citationListRef" :chunks="citations" />
+        <p v-else-if="citationHintVisible" class="citation-empty">
+          <el-icon><InfoFilled /></el-icon>
+          <span>本条回答没有可引用的馆藏依据</span>
         </p>
 
         <div v-if="message.tools.length" class="trace-list">
@@ -85,11 +91,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useAuthStore } from '@/store/auth'
 import AiMarkdown from './AiMarkdown.vue'
+import CitationList from './CitationList.vue'
 import ConfirmCard from './ConfirmCard.vue'
 import ToolTraceItem from './ToolTraceItem.vue'
+import { hasCitationMarkers, hasKnowledgeCall, pickCitationChunks } from './citationMeta'
 
 const props = defineProps({
   message: { type: Object, required: true },
@@ -121,6 +129,57 @@ const metaSummary = computed(() => {
   if (!parts.length) parts.push('调用详情')
   return parts.join(' · ')
 })
+
+// ---------------------------------------------------------------------------
+// 引用来源（RAG citation）
+// ---------------------------------------------------------------------------
+const citationListRef = ref(null)
+
+/** 多次检索时取最后一次“chunks 非空”的 search_knowledge 结果 */
+const citations = computed(() => pickCitationChunks(props.message?.tools))
+
+// 调过知识检索（或正文写了 [n]）却没有 chunks 时给一行轻提示；普通闲聊不显示
+const citationHintVisible = computed(() => {
+  if (citations.value.length) return false
+  if (props.message?.streaming) return false
+  if (props.message?.welcome) return false
+  return hasKnowledgeCall(props.message?.tools) || hasCitationMarkers(props.message?.content)
+})
+
+function findCiteMark(event) {
+  const target = event?.target
+  if (!target || typeof target.closest !== 'function') return null
+  const mark = target.closest('.cite-mark')
+  if (!mark) return null
+  const no = Number(mark.dataset?.no)
+  if (!Number.isFinite(no)) return null
+  return { mark, no }
+}
+
+function highlightMark(bubble, mark) {
+  if (!bubble?.querySelectorAll) return
+  bubble.querySelectorAll('.cite-mark.is-active').forEach((el) => el.classList.remove('is-active'))
+  mark.classList.add('is-active')
+}
+
+// v-html 渲染出的 [n] 标记无法直接绑定 Vue 事件，统一在气泡上做事件委托
+function onBubbleClick(event) {
+  const hit = findCiteMark(event)
+  if (!hit) return
+  event.preventDefault()
+  highlightMark(event.currentTarget, hit.mark)
+  // 编号越界（正文写了 chunks 里不存在的 [9]）时静默返回，不报错
+  citationListRef.value?.focusCitation?.(hit.no)
+}
+
+function onBubbleKeydown(event) {
+  if (event.key !== 'Enter' && event.key !== ' ') return
+  const hit = findCiteMark(event)
+  if (!hit) return
+  event.preventDefault()
+  highlightMark(event.currentTarget, hit.mark)
+  citationListRef.value?.focusCitation?.(hit.no)
+}
 </script>
 
 <style scoped>
@@ -354,6 +413,50 @@ const metaSummary = computed(() => {
 
 .error-retry {
   margin-top: 10px;
+}
+
+/* 无引用依据时的轻提示 */
+.citation-empty {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 12px 0 0;
+  padding: 6px 9px;
+  border: 1px dashed #e1e8e8;
+  border-radius: 6px;
+  color: #8b969b;
+  background: #fbfcfc;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* 正文 [n] 引用标记（由 markdownRenderer 生成，样式需穿透到 v-html 内） */
+.assistant-bubble :deep(.cite-mark) {
+  display: inline-flex;
+  min-width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  margin: 0 1px;
+  padding: 0 3px;
+  border-radius: 4px;
+  color: #0f766e;
+  background: #e6f2f0;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: super;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.assistant-bubble :deep(.cite-mark:hover),
+.assistant-bubble :deep(.cite-mark:focus-visible),
+.assistant-bubble :deep(.cite-mark.is-active) {
+  color: #fff;
+  background: #0f766e;
+  outline: none;
 }
 
 @media (max-width: 800px) {
