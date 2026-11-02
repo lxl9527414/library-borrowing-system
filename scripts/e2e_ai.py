@@ -140,23 +140,24 @@ def main() -> int:
         health = client.get(f"{args.ai}/api/ai/health").json()
         print(f"  · AI 服务 {health}")
         check("AI 服务健康", health.get("status") == "ok")
-        check("使用 mock 模型（离线）", health.get("llmProvider") == "mock",
-              f"实际 {health.get('llmProvider')}")
+        provider = str(health.get("llmProvider") or "未知")
+        check(f"模型提供方：{provider}", provider in ("mock", "deepseek", "qwen", "ollama"),
+              f"实际 {provider}（mock=离线关键词模型，其余为真实大模型）")
 
         print("\n【1】登录并确认初始借阅状态")
         token = login(client, args.java, args.user, args.password)
         print(f"  · token {token[:10]}…")
         ctx = tool_call(client, args.java, token, args.internal_token, "context")["data"]
-        # 幂等保障：如果这本演示书已经被借出（例如上一次截图脚本跑完没还），先还掉，
-        # 否则后面的"借阅数 +1"断言会因为"重复借同一本"而失败
-        leftovers = [b for b in tool_call(client, args.java, token, args.internal_token, "my_borrows")["data"]
-                     if args.book in str(b.get("bookTitle") or "")]
-        for record in leftovers:
+        # 幂等保障：先清空该演示账号的所有在借记录。
+        # 原因：真实模型遇到"有多条在借"时会合理地反问"要还哪一本"，而 mock 直接还第一条；
+        # 清空后语义唯一，脚本才能在 mock 与真实模型下都确定性通过。
+        stale = tool_call(client, args.java, token, args.internal_token, "my_borrows")["data"]
+        for record in stale:
             client.post(f"{args.java}/api/ai/internal/return", json={"borrowId": record["id"]},
                         headers={"Authorization": f"Bearer {token}",
                                  "X-Internal-Token": args.internal_token})
             print(f"  · 清理残留借阅《{record.get('bookTitle')}》(borrowId={record['id']})")
-        if leftovers:
+        if stale:
             ctx = tool_call(client, args.java, token, args.internal_token, "context")["data"]
         before_count = ctx["borrowedCount"]
         print(f"  · 当前在借 {before_count} 本，读者 {ctx['user']['realName']}，规则上限 "
@@ -219,7 +220,8 @@ def main() -> int:
 
         if not args.skip_return:
             print(f"\n【6】还书（写操作，同样要确认）：「我要还书」")
-            events = sse(client, f"{args.ai}/api/ai/chat", {"message": "我要还书"}, token)
+            events = sse(client, f"{args.ai}/api/ai/chat",
+                         {"message": f"我要归还《{args.book}》"}, token)
             show(events)
             confirm2 = next((d for n, d in events if n == "confirm_required"), None)
             check("还书同样出现 confirm_required", confirm2 is not None,

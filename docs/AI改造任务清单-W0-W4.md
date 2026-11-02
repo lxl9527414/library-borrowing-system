@@ -172,10 +172,11 @@ W3 预计 5.5 人日、W4 预计 5 人日（按每周 15–20 小时 ≈ 2.5 周
 - **证据**：`a2e6f67`；`docs/screenshots/06-category-query.png`
 
 ### W2-8 真实模型联调脚手架
-- **状态**：✅ 已完成（脚本就绪，**待你的 Key 执行**）
+- **状态**：✅ 已完成（2026-11-02 已用真实 DeepSeek 跑通）
 - **交付物**：`scripts/check_llm.py`（连通性 / function calling 兼容性 / 首 token 延迟 / 输出速度）
 - **验收**：mock 与"缺 Key"两种状态均给出清晰中文提示
-- **下一步**：填 `.env` 后执行，见 §9 决策项 2
+- **实测**：DeepSeek 连通性 ✅ / function calling ✅（正确产出 `search_books({"keyword":"三体"})`）/ TTFT **521 ms** / 输出 **47.3 字/秒**
+- **注意**：Key 变量名必须是 `DEEPSEEK_API_KEY`（写成通用 `API_KEY=` 不会被读取）
 
 ---
 
@@ -371,7 +372,8 @@ W3 预计 5.5 人日、W4 预计 5 人日（按每周 15–20 小时 ≈ 2.5 周
 | # | 决策 | 选项 | 阻塞 | 建议 |
 |---|---|---|---|---|
 | 1 | **embedding 路线** | A. 通义 `text-embedding-v3`（需 `DASHSCOPE_API_KEY`）<br>B. 本地 `bge-m3`（~2GB，离线）<br>C. A + 本地 `bge-reranker` 重排 | W3-2、W3-4 | **C**（最能讲清召回-重排链路，面试加分） |
-| 2 | **真实模型 Key** | `.env` 填 `LLM_PROVIDER` + Key（DeepSeek/Qwen） | W3 效果验证、W4-3 成本报告 | 先填 DeepSeek（便宜、OpenAI 兼容好） |
+| 2 | **真实模型 Key** | ✅ **已完成**（DeepSeek 已跑通：function calling + TTFT 521ms） | — | 已解决 |
+| 2b | **embedding 来源**（拆分自原决策 1） | A. 补 `DASHSCOPE_API_KEY`（通义 text-embedding-v3，最快）<br>B. 本地 `bge-small-zh`（torch+sentence-transformers+ModelScope 下载，离线可跑） | W3-2 语义检索 | DeepSeek **没有** embedding 接口；需二选一 |
 | 3 | **是否换 Redis Stack** | 换则 checkpointer 跨重启真持久化 | W4-1 多实例演示 | 演示前换；本地已能自动降级 |
 | 4 | **线上密码轮换** | 管理员/读者/MySQL/Redis 全部重置 | 安全（已发生泄露） | 尽快，改完同步 `deploy/` 配置 |
 | 5 | **仓库推到 GitHub** | 需要 remote + Actions | W4-2 CI、投递 | 投递前必须做（作品集要有链接） |
@@ -431,5 +433,7 @@ cd frontend && npm run build
 | 2026-11-02 | W3-1 完成（535 块语料，幂等） | `ai-service/data/corpus/knowledge.jsonl` |
 | 2026-11-02 | W3-3 BM25 基线完成（Recall@5 0.973 / MRR 0.859） | `docs/RAG评测报告.md` |
 | 2026-11-02 | W3-6 评测集与检索评测完成（85 条用例） | `ai-service/eval/` |
+| 2026-11-02 | **真实模型联调完成**（DeepSeek：function calling + E2E 全绿 + TTFT 521ms） | `scripts/check_llm.py`、`scripts/e2e_ai.py` |
+| 2026-11-02 | 发现 Key 命名问题并修正（`API_KEY` → `DEEPSEEK_API_KEY`） | `.env`（未入库） |
 | 待定 | W3 开工（需决策项 1/2） | ⬜ |
 | 待定 | W4 开工 | ⬜ |
