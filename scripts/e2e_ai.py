@@ -130,7 +130,7 @@ def main() -> int:
     env = _load_env()
     parser.add_argument("--user", default=env.get("DEMO_USER", "reader"), help="普通读者账号")
     parser.add_argument("--password", default=env.get("DEMO_PASSWORD", "reader123"))
-    parser.add_argument("--internal-token", default="dev-internal-token")
+    parser.add_argument("--internal-token", default=_load_env().get("AI_INTERNAL_TOKEN", "dev-internal-token"))
     parser.add_argument("--book", default="红楼梦", help="用于借还验证的书名（需有库存）")
     parser.add_argument("--skip-return", action="store_true")
     args = parser.parse_args()

@@ -134,12 +134,12 @@ CASES = [
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="RAG 知识问答端到端验证")
+    env = load_env()
     parser.add_argument("--java", default="http://127.0.0.1:18080")
     parser.add_argument("--ai", default="http://127.0.0.1:8000")
     parser.add_argument("--only", default="", help="只跑指定类别，逗号分隔：rule,book,faq,inventory,refuse")
     args = parser.parse_args()
 
-    env = load_env()
     wanted = {x.strip() for x in args.only.split(",") if x.strip()} or {c for c, _ in CASES}
 
     with httpx.Client() as client:

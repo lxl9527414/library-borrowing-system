@@ -41,3 +41,4 @@ ai-service/logs/
 # ===== RAG 向量与模型产物（可由 scripts/index_corpus.py 重建，不入库）=====
 ai-service/data/models/
 ai-service/data/embeddings/
+deploy/credentials.local.dev
