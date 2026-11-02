@@ -30,7 +30,12 @@ from langgraph.types import interrupt
 from app.agent.state import AgentState, RunContext
 from app.obs.logging import get_logger
 from app.tools.executor import CODE_TOOL_NOT_FOUND
-from app.tools.schemas import CONFIRM_SUMMARY_TEMPLATES, TOOL_SCHEMAS, is_write_tool
+from app.tools.schemas import (
+    CONFIRM_SUMMARY_TEMPLATES,
+    CONFIRM_SUMMARY_TEMPLATES_NO_TITLE,
+    TOOL_SCHEMAS,
+    is_write_tool,
+)
 
 if TYPE_CHECKING:  # pragma: no cover - 仅类型检查，运行时延迟导入避免循环依赖
     from app.agent.checkpointer import CheckpointerBackend
@@ -126,13 +131,46 @@ def _find_title(messages: list[BaseMessage], args: dict[str, Any]) -> str | None
     return None
 
 
+# 书名缓存：确认卡片需要展示真实书名。真实模型可能"跨轮"直接调 borrow_book（只带 bookId），
+# 此时本回合消息里没有书名，就需要回查一次业务接口。只读、幂等，可安全重放；缓存避免重复查询。
+_TITLE_CACHE: dict[tuple[str, str], str] = {}
+
+
+async def _lookup_book_title(ctx: RunContext, book_id: Any) -> str | None:
+    """回查书名（只读工具 get_book_detail）。任何异常都返回 None，绝不阻断确认流程。"""
+    try:
+        numeric = int(book_id)
+    except (TypeError, ValueError):
+        return None
+    cache_key = (ctx.session_id, str(numeric))
+    if cache_key in _TITLE_CACHE:
+        return _TITLE_CACHE[cache_key]
+    try:
+        result = await ctx.executor.execute(
+            {"id": f"title-lookup-{numeric}", "name": "get_book_detail", "args": {"bookId": numeric}}
+        )
+        data = result.data if isinstance(result.data, dict) else {}
+        book = data.get("book") if isinstance(data.get("book"), dict) else {}
+        title = book.get("title")
+        if title:
+            _TITLE_CACHE[cache_key] = str(title)
+            return str(title)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning(f"确认卡片书名回查失败（忽略）：{type(exc).__name__}: {exc}")
+    return None
+
+
 def _single_call_summary(name: str, args: dict[str, Any], title: str | None) -> str:
     template = CONFIRM_SUMMARY_TEMPLATES.get(name, "即将执行 {tool}，是否确认？")
+    if not title:
+        # 没查到书名时不要显示《该图书》这种怪文案，直接给出可核对的 id
+        template = CONFIRM_SUMMARY_TEMPLATES_NO_TITLE.get(name, "即将执行 {tool}（{args}），是否确认？")
     return template.format(
-        title=title or "该图书",
+        title=title or "",
         bookId=args.get("bookId", "-"),
         borrowId=args.get("borrowId", "-"),
         tool=name,
+        args=json.dumps(args, ensure_ascii=False),
     )
 
 
@@ -141,6 +179,7 @@ def build_confirmation_payload(
     step: int,
     write_calls: list[dict[str, Any]],
     messages: list[BaseMessage],
+    title_hints: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """构造 confirm_required 事件的 data（确定性：同一状态重放得到同一 confirmationId）。"""
     signature = json.dumps(
@@ -156,7 +195,7 @@ def build_confirmation_payload(
         name = str(call.get("name") or "")
         raw_args = call.get("args")
         args = dict(raw_args) if isinstance(raw_args, dict) else {}
-        title = _find_title(messages, args)
+        title = _find_title(messages, args) or (title_hints or {}).get(str(call.get("id")))
         tools.append(
             {
                 "callId": str(call.get("id") or ""),
@@ -247,11 +286,22 @@ async def authorize_node(state: AgentState, config: RunnableConfig) -> dict[str,
     tool_calls = list(getattr(last_message, "tool_calls", []) or [])
     write_calls = [call for call in tool_calls if is_write_tool(str(call.get("name") or ""))]
 
+    messages = list(state.get("messages") or [])
+    title_hints: dict[str, str] = {}
+    for call in write_calls:
+        args = dict(call.get("args") or {})
+        if args.get("bookId") is None or _find_title(messages, args):
+            continue
+        title = await _lookup_book_title(ctx, args.get("bookId"))
+        if title:
+            title_hints[str(call.get("id"))] = title
+
     payload = build_confirmation_payload(
         session_id=ctx.session_id,
         step=int(state.get("step") or 0),
         write_calls=write_calls,
-        messages=list(state.get("messages") or []),
+        messages=messages,
+        title_hints=title_hints,
     )
     decision = interrupt(payload)
     approved = bool(decision.get("approved")) if isinstance(decision, dict) else False

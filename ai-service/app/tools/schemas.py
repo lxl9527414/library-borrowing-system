@@ -152,3 +152,10 @@ CONFIRM_SUMMARY_TEMPLATES: dict[str, str] = {
     "return_book": "即将为你归还《{title}》（borrowId={borrowId}），确认归还吗？",
     "reserve_book": "《{title}》当前暂无可借库存，是否为你预约排队？",
 }
+
+# 拿不到书名时的兜底文案（避免出现《该图书》这种奇怪展示）
+CONFIRM_SUMMARY_TEMPLATES_NO_TITLE: dict[str, str] = {
+    "borrow_book": "即将为你借阅 bookId={bookId} 对应的图书，确认借阅吗？",
+    "return_book": "即将为你归还 borrowId={borrowId} 对应的借阅记录，确认归还吗？",
+    "reserve_book": "即将为你预约 bookId={bookId} 对应的图书，确认预约吗？",
+}

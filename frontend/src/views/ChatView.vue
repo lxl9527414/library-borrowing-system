@@ -215,10 +215,12 @@ const modelTag = computed(() => {
 const healthTooltip = computed(() => {
   if (health.loading) return '正在检测 AI 服务'
   if (!health.ok) return health.error || 'AI 服务不可用'
-  const base = `llmProvider=${health.provider || '未知'} · version=${health.version || '-'}`
+  // 与 /api/ai/health 的真实 llmProvider 保持一致：真实模型下不出现 mock 相关描述
+  const provider = health.provider || '未知'
+  const base = `模型：${provider} · version=${health.version || '-'} · 来源 /api/ai/health`
   if (health.provider === 'mock') {
     // 说清楚 mock 不是"AI 坏了"，而是离线演示用的关键词假模型，避免误判
-    return `${base}｜当前离线 Mock 模式：只能按内置关键词应答（查馆藏/借还/预约），不理解自由表达。在 .env 配置 LLM_PROVIDER 与 API Key 后重启即切换为真实大模型`
+    return `${base}｜当前为离线 Mock 模式：只能按内置关键词应答（查馆藏/借还/预约），不理解自由表达。在 .env 配置 LLM_PROVIDER 与 API Key 后重启即切换为真实大模型`
   }
   return base
 })

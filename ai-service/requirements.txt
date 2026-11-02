@@ -34,3 +34,6 @@ pytest==9.2.0
 pytest-asyncio==1.4.1
 # 离线 Redis 替身（单元测试不依赖真实 Redis）
 fakeredis==2.40.0
+
+# ---- 向量检索（app/rag 直接 import；此前漏写，CI 同学发现）----
+numpy==2.2.6

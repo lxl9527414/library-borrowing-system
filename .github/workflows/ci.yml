@@ -1,0 +1,150 @@
+# =====================================================================
+# 云阁图书馆 · CI 流水线（W4-2）
+#
+# 四个并行 job：
+#   backend     后端单测（JDK 17 + Maven 缓存）
+#   ai-service  AI 服务单测（Python 3.11 + 精简依赖，全离线）
+#   frontend    前端依赖安装 + 生产构建
+#   rag-eval    RAG 检索层离线评测门禁（BM25，Recall@5 ≥ 0.95）
+#
+# 设计约束：
+#   - 不写任何真实 Key / Secret：所有测试都用 mock 模型 + MockTransport + fakeredis；
+#   - 只读仓库权限、取消重复运行、单 job 15 分钟超时；
+#   - AI 服务只装 pytest 实际 import 的子集（见 .github/ci/ai-service-ci-requirements.txt）；
+#   - 需要真实模型 Key 的 scripts/eval_answers.py **不**进 CI。
+#
+# 本地复现命令见 docs/CI说明.md。
+# =====================================================================
+name: CI
+
+"on":
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+# 最小权限：CI 只读仓库，不需要写 issue / PR / packages
+permissions:
+  contents: read
+
+# 同一分支重复触发时取消旧运行：PR 取消防抖，main 分支保留历史结果便于追溯
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  PYTHONUNBUFFERED: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_NO_INPUT: "1"
+
+jobs:
+  # -------------------------------------------------------------------
+  # 1) 后端：JDK 17（本机默认 JDK 27，CI 显式固定 17，与 pom.xml 的 java.version 一致）
+  # -------------------------------------------------------------------
+  backend:
+    name: 后端 · Maven 单测 (JDK 17)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 JDK 17 + Maven 缓存
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+
+      - name: 单元测试 (mvn -B clean test)
+        # 71 个纯 Mockito 单测，不需要 MySQL / Redis
+        run: mvn -B clean test
+
+  # -------------------------------------------------------------------
+  # 2) AI 服务：Python 3.11 + 精简依赖；312 个测试全离线
+  # -------------------------------------------------------------------
+  ai-service:
+    name: AI 服务 · pytest (Python 3.11)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python 3.11 + pip 缓存
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: .github/ci/ai-service-ci-requirements.txt
+
+      - name: 安装 CI 依赖子集（不含重依赖）
+        run: python -m pip install -r .github/ci/ai-service-ci-requirements.txt
+
+      - name: 单元测试 (pytest ai-service -q)
+        # mock 模型 + httpx.MockTransport + fakeredis：不需要网络 / Key / MySQL / Redis
+        run: python -m pytest ai-service -q
+
+  # -------------------------------------------------------------------
+  # 3) 前端：Node 20 + npm ci（lockfile 固定）+ 生产构建
+  # -------------------------------------------------------------------
+  frontend:
+    name: 前端 · npm ci + build (Node 20)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Node 20 + npm 缓存
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: 安装依赖 (npm ci)
+        run: npm ci --no-audit --no-fund
+
+      - name: 生产构建 (npm run build)
+        # 产物按 vite.config.js 写入 ../backend/src/main/resources/static（已被 .gitignore 忽略）
+        run: npm run build
+
+  # -------------------------------------------------------------------
+  # 4) RAG 检索评测门禁：BM25 模式，离线可跑，不需要 MySQL / Key
+  #    - 语料与评测集都在仓库里：ai-service/data/corpus/knowledge.jsonl + ai-service/eval/golden_qa.jsonl
+  #    - 不跑 scripts/build_corpus.py（那需要 MySQL），也不跑 eval_answers.py（那需要真实 Key）
+  # -------------------------------------------------------------------
+  rag-eval:
+    name: RAG · 检索评测门禁 (BM25, Recall@5 ≥ 0.95)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python 3.11 + pip 缓存
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: .github/ci/ai-service-ci-requirements.txt
+
+      - name: 安装 CI 依赖子集（不含重依赖）
+        run: python -m pip install -r .github/ci/ai-service-ci-requirements.txt
+
+      - name: 检索评测（离线 BM25，低于阈值即失败）
+        working-directory: ai-service
+        env:
+          RAG_RETRIEVAL_MODE: bm25
+          RAG_RERANK_ENABLED: "false"
+        # 门禁：Recall@5 低于 0.95 返回非 0 退出码；
+        # 报告写到 RUNNER_TEMP，避免在仓库工作区留下未跟踪文件
+        run: python scripts/run_eval.py --min-recall 0.95 --out "$RUNNER_TEMP/eval_report_bm25.json"

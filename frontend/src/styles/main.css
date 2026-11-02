@@ -194,9 +194,22 @@ select {
     display: none;
   }
 
+  /* 移动端分页：原先用 justify-content:center + 溢出滚动，
+     flex 居中会把超宽的分页条往左推出可视区（scrollLeft 无法为负），左侧 "共 N 条" 永远滚不到。
+     改为左对齐 + 隐藏次要控件（每页条数/跳页），保证可从头滚到尾。 */
   .pagination {
-    justify-content: center;
+    justify-content: flex-start;
+    padding: 12px 14px;
     overflow-x: auto;
+  }
+
+  .pagination .el-pagination {
+    flex-wrap: nowrap;
+  }
+
+  .pagination .el-pagination__sizes,
+  .pagination .el-pagination__jump {
+    display: none;
   }
 
   .el-table {
@@ -205,6 +218,18 @@ select {
 
   .table-panel {
     overflow-x: auto;
+  }
+
+  /* 操作日志「详情」气泡固定 :width="420"，在 390 视口会向右撑出页面；
+     移动端限宽并贴右显示（arrow 位置略偏但内容完整可读）。 */
+  .el-popover.el-popper {
+    right: 12px !important;
+    left: auto !important;
+    max-width: calc(100vw - 24px);
+  }
+
+  .log-detail p {
+    overflow-wrap: anywhere;
   }
 }
 

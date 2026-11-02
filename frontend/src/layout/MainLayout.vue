@@ -103,20 +103,40 @@ const collapsed = ref(false)
 const menuOpen = ref(false)
 const isMobile = ref(false)
 
-const allItems = [
-  { path: '/dashboard', title: '工作台', icon: 'DataAnalysis' },
-  { path: '/chat', title: '智能馆员', icon: 'ChatDotRound' },
-  { path: '/books', title: '图书管理', icon: 'Collection' },
-  { path: '/borrows', title: '借阅记录', icon: 'Notebook' },
-  { path: '/reservations', title: '预约排队', icon: 'AlarmClock' },
-  { path: '/users', title: '用户管理', icon: 'User', roles: ['ADMIN'] },
-  { path: '/rules', title: '借阅规则', icon: 'SetUp', roles: ['ADMIN'] },
-  { path: '/logs', title: '操作日志', icon: 'Document', roles: ['ADMIN'] },
-]
+// ---------------------------------------------------------------------------
+// 菜单由路由驱动：从 MainLayout 的 children 读取 meta.title / meta.icon / meta.roles
+// 新增页面只需要在 router/index.js 里加一条路由，不用再改这里（消除 W2 技术债）
+// ---------------------------------------------------------------------------
+function findLayoutRoute(routes) {
+  for (const item of routes || []) {
+    if (!Array.isArray(item.children) || !item.children.length) continue
+    const hasMenuChild = item.children.some((child) => child.meta && child.meta.title)
+    if (hasMenuChild) return item
+  }
+  return null
+}
 
-const menuItems = computed(() =>
-  allItems.filter((item) => !item.roles || item.roles.includes(auth.user?.role)),
-)
+const layoutRoute = findLayoutRoute(router.options.routes)
+const layoutChildren = layoutRoute?.children || []
+
+function joinRoutePath(parentPath, childPath) {
+  if (!childPath) return parentPath || '/'
+  if (childPath.startsWith('/')) return childPath
+  const base = String(parentPath || '/').replace(/\/+$/, '')
+  return `${base}/${childPath}`.replace(/\/{2,}/g, '/')
+}
+
+const menuItems = computed(() => {
+  const role = auth.user?.role
+  return layoutChildren
+    .filter((child) => child.meta?.title && !child.meta.hidden)
+    .filter((child) => !child.meta.roles || child.meta.roles.includes(role))
+    .map((child) => ({
+      path: joinRoutePath(layoutRoute?.path, child.path),
+      title: child.meta.title,
+      icon: child.meta.icon,
+    }))
+})
 
 const avatarText = computed(() => {
   const name = auth.user?.realName || auth.user?.username || 'U'

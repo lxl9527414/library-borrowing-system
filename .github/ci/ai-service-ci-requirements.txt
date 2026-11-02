@@ -1,0 +1,50 @@
+# =====================================================================
+# CI 专用依赖子集（只装 pytest 真正 import 到的包）
+#
+# 为什么不直接 pip install -r ai-service/requirements.txt：
+#   1. requirements.txt 是「本地/容器运行」的完整依赖，包含 uvicorn[standard]
+#      等 CI 用不到的包；RAG 本地 embedding（torch / sentence-transformers）在
+#      app/rag/embedding.py 里是可选懒加载依赖，CI 不安装；未来若把这类重依赖
+#      加进 requirements.txt，CI 也不会被拖慢；
+#   2. langgraph-checkpoint-redis 是生产可选的 Redis 检查点后端：缺失时
+#      app/agent/checkpointer.py 会自动降级 InMemorySaver，测试用假 saver 注入，
+#      不需要真实安装；
+#   3. 本文件让 CI 的依赖面**稳定可控**：以后若有人往 requirements.txt 里加入
+#      重依赖（模型、本地向量库），CI 不会被拖慢，只会在真正需要时同步本文件。
+#
+# 同步约定：
+#   - 升级 ai-service/requirements.txt 的 Python 包版本时，同步改这里；
+#   - 测试新增第三方 import 而这里没装 → CI 直接失败，属于预期的「漂移告警」；
+#   - numpy 在 requirements.txt 里目前缺失（app/rag 直接 import），这里显式补上，
+#     后续应把 numpy 补进 ai-service/requirements.txt（见 docs/CI说明.md 遗留项）。
+# =====================================================================
+
+# ---- Web / SSE ----
+fastapi==0.162.0
+starlette==1.7.0
+anyio==4.15.1
+sse-starlette==3.5.1
+
+# ---- 配置 / 校验 ----
+pydantic==2.14.2
+pydantic-settings==2.15.0
+python-dotenv==1.2.4
+
+# ---- LangGraph / LangChain（mock 模型 + 图执行 + 工具调用）----
+langgraph==1.2.19
+langgraph-checkpoint==4.3.1
+langchain-core==1.7.3
+langchain-openai==1.7.3
+openai==3.42.0
+
+# ---- HTTP / Redis ----
+httpx==0.28.1
+redis==8.1.0
+
+# ---- 数值计算（RAG 的 BM25 / 向量检索）----
+numpy==2.2.6
+
+# ---- 测试框架（含离线 Redis 替身，不依赖真实 Redis）----
+pytest==9.2.0
+pytest-asyncio==1.4.1
+fakeredis==2.40.0

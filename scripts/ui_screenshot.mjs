@@ -187,7 +187,23 @@ async function shot(cdp, name) {
 }
 
 /** 设置输入框内容并触发 Vue 的 v-model 更新 */
+
+/** 等待当前流式生成结束（界面在生成中会显示「停止」按钮）。真实模型比 mock 慢，必须等。 */
+async function waitIdle(cdp, timeoutMs = 90000) {
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline) {
+    const streaming = await evaluate(
+      cdp,
+      `[...document.querySelectorAll('button')].some((b) => /停止/.test(b.textContent || ''))`,
+    )
+    if (!streaming) return true
+    await sleep(400)
+  }
+  throw new Error(`等待流式结束超时（${timeoutMs}ms）`)
+}
+
 async function fillInput(cdp, text) {
+  await waitIdle(cdp)
   const result = await evaluate(
     cdp,
     `(() => {
@@ -335,20 +351,22 @@ async function main() {
     console.log(`提问：帮我借${BOOK}（应出现确认卡片）`)
     await fillInput(cdp, `帮我借${BOOK}`)
     await clickSend(cdp)
-    await waitFor(cdp, '/确认|确定借阅|是否/.test(document.body.innerText)', {
-      label: '确认卡片出现',
-      timeoutMs: 30000,
-    })
+    await waitFor(
+      cdp,
+      `[...document.querySelectorAll('button')].some((b) => /确认执行|确认借阅/.test(b.textContent || ''))`,
+      { label: '确认卡片按钮出现', timeoutMs: 90000 },
+    )
     await sleep(500)
     await shot(cdp, '03-confirm.png')
 
     // 5) 确认 → 真实落库
     console.log('点击「确认」…')
     await clickDecision(cdp, true)
-    await waitFor(cdp, '/成功|应还|已借/.test(document.body.innerText)', {
+    await waitFor(cdp, '/成功|应还|已借|借阅成功/.test(document.body.innerText)', {
       label: '借阅执行结果',
-      timeoutMs: 30000,
+      timeoutMs: 90000,
     })
+    await waitIdle(cdp)
     await sleep(700)
     await shot(cdp, '04-success.png')
 
