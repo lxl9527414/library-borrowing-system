@@ -2,9 +2,9 @@
   "top_k": 5,
   "overall": {
     "n": 75,
-    "recall_at_k": 0.9733,
-    "mrr": 0.8844,
-    "avg_top1_score": 50.5329
+    "recall_at_k": 0.9867,
+    "mrr": 0.8889,
+    "avg_top1_score": 50.5466
   },
   "by_category": {
     "book": {
@@ -24,29 +24,19 @@
     },
     "rule": {
       "n": 15,
-      "recall_at_k": 0.8667,
-      "mrr": 0.4222,
-      "avg_top1_score": 46.9429
+      "recall_at_k": 0.9333,
+      "mrr": 0.4444,
+      "avg_top1_score": 47.0115
     }
   },
   "refusal_pool": {
     "n": 10,
-    "top1_score_min": 7.126,
-    "top1_score_median": 11.204,
+    "top1_score_min": 4.3078,
+    "top1_score_median": 9.8819,
     "top1_score_max": 31.3863,
     "note": "拒答正确性需在答案层评估（LLM 阶段）；此处仅给出负样本的分数分布，用于设定拒答阈值"
   },
   "misses": [
-    {
-      "id": "rule-002",
-      "category": "rule",
-      "question": "一本书一次可以借多久？",
-      "should_refuse": false,
-      "hit_rank": null,
-      "top1_score": 17.1841,
-      "top1_id": "faq:1",
-      "top1_title": "一次能借几本书？"
-    },
     {
       "id": "rule-010",
       "category": "rule",
@@ -374,7 +364,7 @@
       "category": "rule",
       "question": "一本书一次可以借多久？",
       "should_refuse": false,
-      "hit_rank": null,
+      "hit_rank": 2,
       "top1_score": 17.1841,
       "top1_id": "faq:1",
       "top1_title": "一次能借几本书？"
@@ -384,10 +374,10 @@
       "category": "rule",
       "question": "一本书最多可以续借几次？",
       "should_refuse": false,
-      "hit_rank": 2,
-      "top1_score": 39.4142,
-      "top1_id": "faq:3",
-      "top1_title": "可以续借吗？续借规则是什么？"
+      "hit_rank": 3,
+      "top1_score": 40.4436,
+      "top1_id": "faq:1",
+      "top1_title": "一次能借几本书？"
     },
     {
       "id": "rule-004",
@@ -835,9 +825,9 @@
       "question": "帮我推荐几只明天会涨的股票",
       "should_refuse": true,
       "hit_rank": 1,
-      "top1_score": 12.1486,
-      "top1_id": "book:389",
-      "top1_title": "爷爷一定有办法"
+      "top1_score": 4.3078,
+      "top1_id": "book:38",
+      "top1_title": "聪明的投资者"
     },
     {
       "id": "refuse-004",
@@ -855,9 +845,9 @@
       "question": "这本书的作者有没有犯罪记录？",
       "should_refuse": true,
       "hit_rank": 1,
-      "top1_score": 10.9573,
-      "top1_id": "book:134",
-      "top1_title": "居里夫人传"
+      "top1_score": 6.1527,
+      "top1_id": "book:395",
+      "top1_title": "罪与罚"
     },
     {
       "id": "refuse-006",
@@ -895,9 +885,9 @@
       "question": "这本书的电子版下载地址在哪里？",
       "should_refuse": true,
       "hit_rank": 1,
-      "top1_score": 8.3912,
-      "top1_id": "book:240",
-      "top1_title": "代码大全"
+      "top1_score": 7.9102,
+      "top1_id": "book:375",
+      "top1_title": "剑指Offer"
     },
     {
       "id": "refuse-010",
@@ -905,9 +895,9 @@
       "question": "读者卡里的余额可以提现吗？",
       "should_refuse": true,
       "hit_rank": 1,
-      "top1_score": 7.126,
-      "top1_id": "faq:28",
-      "top1_title": "怎么取消预约？"
+      "top1_score": 6.4537,
+      "top1_id": "book:211",
+      "top1_title": "快速阅读"
     }
   ]
 }

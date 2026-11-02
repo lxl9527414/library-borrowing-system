@@ -234,15 +234,22 @@ class RagService:
             return []
 
         mode = self._effective_mode
+
+        # 重排必须看到「比 top_k 更大的候选池」才有意义：
+        # 否则它只是在 5 个候选里重新洗牌，无法把正确块从第 8 位捞上来。
+        # 之前正是这个缺陷导致 vector+rerank 的 MRR(0.896) 低于纯向量(0.916)。
+        reranker = self._get_reranker()
+        retrieve_k = max(top_k, self.config.rerank_candidates) if reranker is not None else top_k
+
         try:
             if mode == "bm25":
-                results = self._search_bm25(query_text, top_k=top_k, source_types=source_types)
+                results = self._search_bm25(query_text, top_k=retrieve_k, source_types=source_types)
             elif mode == "vector":
-                results = self._search_vector(query_text, top_k=top_k, source_types=source_types)
+                results = self._search_vector(query_text, top_k=retrieve_k, source_types=source_types)
                 if results is None:  # 运行时 embedding 失败 → 本次查询降级 BM25
-                    results = self._search_bm25(query_text, top_k=top_k, source_types=source_types)
+                    results = self._search_bm25(query_text, top_k=retrieve_k, source_types=source_types)
             else:
-                results = self._search_hybrid_or_bm25(query_text, top_k=top_k, source_types=source_types)
+                results = self._search_hybrid_or_bm25(query_text, top_k=retrieve_k, source_types=source_types)
         except Exception as exc:  # 极端情况（如索引被并发替换）也不抛给 Agent
             logger.warning(
                 f"RAG 检索失败，已降级为空结果：{type(exc).__name__}: {exc}",
