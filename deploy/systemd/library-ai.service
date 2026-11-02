@@ -1,0 +1,22 @@
+[Unit]
+Description=Library AI Service (FastAPI + LangGraph)
+After=network.target library-server.service
+Requires=library-server.service
+
+[Service]
+Type=simple
+User=library
+Group=library
+WorkingDirectory=/opt/library/ai-service
+EnvironmentFile=/opt/library/config/ai.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/miniconda3/envs/ai/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+Restart=always
+RestartSec=5
+# 保护 MySQL/Java：限制 AI 服务内存，超出则被内核杀掉后自动重启
+MemoryLimit=600M
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

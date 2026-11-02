@@ -472,5 +472,7 @@ cd frontend && npm run build
 | 2026-11-02 | W4-5 完成：凭据轮换清单 + 模板 + 密钥扫描脚本 + CI 门禁 | `docs/凭据轮换清单.md`、`scripts/check_secrets.sh` |
 | 2026-11-02 | W4-4 完成：MCP Server（7 工具，写操作 confirm 两段式，selftest 实测） | `ai-service/scripts/mcp_server.py`、`docs/MCP集成说明.md` |
 | 2026-11-02 | 收口：投递前检查清单 | `docs/投递前检查清单.md` |
+| 2026-11-02 | **公网部署完成**：jar 更新（/chat 从 404 → 200）+ AI 服务上线（nginx 代理 + 内部接口封锁），公网对话/引用/确认卡实测通过 | `deploy/AI-SERVICE-DEPLOY.md` |
+| 2026-11-02 | 公网演示数据：生产库扩充到 1 管理员 + 20 读者（每人强随机密码） | `deploy/credentials.local.prod-demo`（gitignored） |
 | 待定 | W3 开工（需决策项 1/2） | ⬜ |
 | 待定 | W4 开工 | ⬜ |

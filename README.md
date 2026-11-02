@@ -72,6 +72,10 @@
 |---|---|
 | ![轨迹](docs/screenshots/02-found.png) | ![拒答](docs/screenshots/08-rag-refusal.png) |
 
+> 公网实拍（`https://lxlssr.icu`，真实 DeepSeek + 检索）：
+
+![公网对话](docs/screenshots/11-public-chat.png)
+
 > 截图由 `scripts/ui_screenshot.mjs` 驱动无头 Chrome 自动走查生成（自写 CDP，不依赖 Playwright），可随时重跑。
 
 ## 一键演示（真实模型）
@@ -213,6 +217,19 @@ cd backend && mvn spring-boot:run
 java -jar backend/target/library-server.jar
 ```
 
+## 公网部署
+
+线上地址：**<https://lxlssr.icu>**（业务 + AI 对话均可用）
+
+| 组件 | 部署方式 | 脚本 |
+|---|---|---|
+| 前端 + 后端 jar | `./deploy/push.sh`（打包→上传→重启→自检，支持 `--rollback`） | `deploy/push.sh` |
+| AI 服务（FastAPI + LangGraph） | `./deploy/push-ai.sh`（打包→上传→`systemctl restart library-ai`→健康自检） | `deploy/push-ai.sh` |
+
+服务器侧要点（CentOS 7 / glibc 2.17 / 1.76 GB 内存的完整踩坑记录）：
+[docs 部署说明](deploy/AI-SERVICE-DEPLOY.md) —— 包含 **Miniconda 必须用 24.x**、**numpy<2**、**tiktoken==0.8.0**、
+1 GB swap、`MemoryLimit=600M`、nginx 关闭 `proxy_buffering`、以及内部接口封锁的验证命令。
+
 ## 常用环境变量
 
 | 变量 | 默认值 | 说明 |
@@ -266,5 +283,6 @@ java -jar backend/target/library-server.jar
 | [docs/可观测性说明.md](docs/可观测性说明.md) | Langfuse 埋点方式、启用步骤、兜底行为 |
 | [docs/凭据轮换清单.md](docs/凭据轮换清单.md) | 需要轮换的账号、步骤、验证清单 |
 | [docs/MCP集成说明.md](docs/MCP集成说明.md) | MCP Server 的 7 个工具、鉴权、接入方式 |
+| [deploy/AI-SERVICE-DEPLOY.md](deploy/AI-SERVICE-DEPLOY.md) | 公网 AI 服务部署与踩坑（可复现） |
 | [docs/投递前检查清单.md](docs/投递前检查清单.md) | 投递前的 10 分钟自查（含必须你本人做的 3 件事） |
 | [docs/简历项目文案-终稿.md](docs/简历项目文案-终稿.md) | 可直接粘贴的简历项目段（三个岗位变体） |
