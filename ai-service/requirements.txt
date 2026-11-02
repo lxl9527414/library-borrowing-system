@@ -37,3 +37,6 @@ fakeredis==2.40.0
 
 # ---- 向量检索（app/rag 直接 import；此前漏写，CI 同学发现）----
 numpy==2.2.6
+
+# ---- MCP Server（W4-4，scripts/mcp_server.py 用；可选）----
+mcp>=2.0

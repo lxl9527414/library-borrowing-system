@@ -261,3 +261,5 @@ java -jar backend/target/library-server.jar
 | [docs/面试问答.md](docs/面试问答.md) | 20 个高频追问的回答要点 |
 | [docs/可观测性说明.md](docs/可观测性说明.md) | Langfuse 埋点方式、启用步骤、兜底行为 |
 | [docs/凭据轮换清单.md](docs/凭据轮换清单.md) | 需要轮换的账号、步骤、验证清单 |
+| [docs/MCP集成说明.md](docs/MCP集成说明.md) | MCP Server 的 7 个工具、鉴权、接入方式 |
+| [docs/投递前检查清单.md](docs/投递前检查清单.md) | 投递前的 10 分钟自查（含必须你本人做的 3 件事） |
