@@ -334,3 +334,68 @@ RAG_RETRIEVAL_MODE=vector RAG_RERANK_ENABLED=true  .venv/bin/python scripts/run_
 2. **评测口径**：检索层评测（§11）不走工具阈值，因此两处数字口径不同，报告中已分别标注。
 3. **W3-6 答案层指标（RAGAS faithfulness / answer relevancy）尚未跑**：需要 LLM-as-judge，可在下一步用 DeepSeek 补；当前以"引用是否支持答案"的人工抽查 + 拒答验证替代。
 4. 重排（W3-4）已实现但当前 `.env` 默认关闭（`RAG_RERANK_ENABLED=false`），因为它在评测集上未能超过纯向量；模块与降级逻辑保留，待评测口径修正后重测。
+
+---
+
+## 13. 答案层评测（W3-6 后半，2026-11-02 完成）
+
+检索层指标（§11）回答"该找的内容找到没有"，答案层指标回答"**模型有没有用好这些内容**"。
+
+### 13.1 评测方法（为什么没用 `pip install ragas`）
+
+- `ragas` 的依赖链包含 `datasets` / `tiktoken` 等重型包，且 tiktoken 首次运行需联网下载 BPE 词表
+  —— 本机网络受限（HF/镜像/ModelScope 直链均不可达），安装不可行；
+- 因此**参照 RAGAS 的指标定义自行实现**，用 DeepSeek 当 judge（`response_format=json_object`，温度 0）：
+  每条用例 **1 次 judge 调用**返回 `faithfulness`、`answer_relevancy`、`relevant_chunk_ids`、`unsupported_claims`；
+  `context_precision` = 相关块数 / 召回块数；引用准确率/覆盖率由规则计算（不需要 LLM）。
+- 判官拿到的是**该轮模型可见的全部证据**（知识库 chunks + `search_books`/`get_book_detail` 返回），
+  否则"库存类问题走馆藏接口"会被误判成无依据。
+
+### 13.2 结果（85 条用例；真实 DeepSeek + 真实向量索引 + 真实工具链路）
+
+| 类别 | 用例 | faithfulness | answer_relevancy | context_precision |
+|---|---|---|---|---|
+| book（馆藏事实） | 30 | **1.000** | 0.983 | 0.430 |
+| faq（流程） | 30 | 0.868 | 0.950 | 0.848 |
+| rule（规则数值） | 15 | 0.963 | 0.987 | 0.780 |
+| **总体** | **75** | **0.940** | **0.971** | 0.667 |
+
+| 附加指标 | 值 |
+|---|---|
+| 引用准确率（`[n]` 指向的块被判定为相关） | **0.913** |
+| 引用覆盖率（带引用的句子占比） | 0.437 |
+| 拒答正确率（10 条无依据问题） | **9/10**，编造 **0** |
+| 平均端到端延迟 | 5.96 s（含重试/超时重跑；正常单轮约 3.0 s） |
+
+**对照 §8 设的目标**：faithfulness ≥0.85 → **0.94 达成**；引用准确率 ≥0.90 → **0.913 达成**。
+
+### 13.3 分析（比数字重要）
+
+1. **book 类 context_precision 只有 0.43，不是检索差**：馆藏事实问题（作者/分类/库存）模型会选择
+   `search_books`（更准），此时知识库 chunks 很可能为空或无关 → 该指标天然偏低。
+   `faithfulness=1.000` 说明答案仍然全部有依据（依据来自馆藏接口）。
+   → 这也说明**评测指标要结合工具选择一起看**，不能单看一个数。
+2. **faq 类 faithfulness 0.868 是当前短板**：FAQ 答案较长，模型偶尔会把相邻 FAQ 的内容并入回答，
+   出现"轻微外推"。改进方向：chunk 间去重、提示词要求"每句最多引用 1 个依据"。
+3. **唯一未拒答案例是「帮我写一段 Python 快速排序代码」**：模型选择帮忙写代码而不是拒答。
+   这属于**领域边界**问题（不是知识幻觉），且未编造馆藏信息；建议在提示词里显式声明"只回答图书馆域问题"。
+4. **原文中"citation_coverage 0.437"不代表引用少**：答案里列表项/短句较多，句号切分偏碎；
+   引用准确率 0.913 更能说明引用质量。
+
+### 13.4 局限（如实声明）
+
+1. judge 与生成模型同源（都是 DeepSeek），存在**自评偏好**；更严谨应换 Claude/GPT 或人工双盲抽检 30 条。
+2. 首次全量跑时 DeepSeek 出现 25/85 连接失败（`Connection error`），已重试补跑并合并；
+   生产评估应加**重试队列与断点续跑**（当前是"失败重跑整段"）。
+3. 拒答判定依赖单一 judge 调用；建议对 10 条拒答用例做人工复核（本报告结论：9/10，1 条属领域边界）。
+
+### 13.5 复现
+
+```bash
+cd ai-service
+# 全量答案层评测（需要 AI 服务 + 后端 + DeepSeek Key）
+.venv/bin/python scripts/eval_answers.py
+# 只跑某类 / 快速冒烟
+.venv/bin/python scripts/eval_answers.py --only refuse --sleep 1.2
+.venv/bin/python scripts/eval_answers.py --limit 5
+```

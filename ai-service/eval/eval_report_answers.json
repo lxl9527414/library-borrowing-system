@@ -1,0 +1,1662 @@
+{
+  "n_answerable": 75,
+  "n_refuse": 10,
+  "overall": {
+    "faithfulness": 0.94,
+    "answer_relevancy": 0.9707,
+    "context_precision": 0.6673,
+    "citation_accuracy": 0.9134,
+    "citation_coverage": 0.4371,
+    "avg_latency_ms": 5958.4
+  },
+  "by_category": {
+    "book": {
+      "n": 30,
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.9833,
+      "context_precision": 0.43
+    },
+    "faq": {
+      "n": 30,
+      "faithfulness": 0.8683,
+      "answer_relevancy": 0.95,
+      "context_precision": 0.8483
+    },
+    "rule": {
+      "n": 15,
+      "faithfulness": 0.9633,
+      "answer_relevancy": 0.9867,
+      "context_precision": 0.78
+    }
+  },
+  "refusal": {
+    "correct_refusals": 9,
+    "hallucinated": 0,
+    "n": 10
+  },
+  "rows": [
+    {
+      "id": "book-001",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《宇宙奇趣全集》这本书的作者是谁？",
+      "answer": "《宇宙奇趣全集》的作者是**伊塔洛·卡尔维诺**，分类为科普，译林出版社出版，目前库存可借（10/10）[1]。\n\n需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 2481,
+      "usage": {
+        "promptTokens": 3984,
+        "completionTokens": 110
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.5,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-002",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《重构：改善既有代码的设计》属于哪个分类？",
+      "answer": "《重构：改善既有代码的设计》属于**计算机**分类[1]。\n\n补充信息：作者 Martin Fowler，人民邮电出版社出版，当前库存可借 2/2[1]。需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 2046,
+      "usage": {
+        "promptTokens": 3998,
+        "completionTokens": 114
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-003",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《时间简史》现在还有库存吗？",
+      "answer": "有库存。《时间简史》（史蒂芬·霍金，湖南科学技术出版社，科普类）馆藏共 4 本，当前可借 4 本，全部在架。\n\n需要我帮你借一本吗？",
+      "n_chunks": 0,
+      "latency_ms": 1853,
+      "usage": {
+        "promptTokens": 3918,
+        "completionTokens": 87
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": null,
+      "citation_coverage": 0.0,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-004",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《大头儿子和小头爸爸》这本书的作者是谁？",
+      "answer": "《大头儿子和小头爸爸》的作者是**郑春华** [1]。\n\n馆藏信息：分类为少儿，长江少年儿童出版社出版，当前库存可借 3/3 [1]。需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 2304,
+      "usage": {
+        "promptTokens": 3965,
+        "completionTokens": 95
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-005",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《社会契约论》属于哪个分类？",
+      "answer": "《社会契约论》属于**社科**分类[1]。\n\n- 作者：卢梭\n- 出版社：商务印书馆\n- 库存：可借 2/2[1]\n\n需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 2008,
+      "usage": {
+        "promptTokens": 3953,
+        "completionTokens": 92
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.4,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-006",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《沉思录》现在还有库存吗？",
+      "answer": "有的。《沉思录》（马可·奥勒留，中央编译出版社，哲学类）目前馆藏 2 本，可借 2 本，现在就能借。\n\n需要我帮你借这本吗？",
+      "n_chunks": 0,
+      "latency_ms": 1556,
+      "usage": {
+        "promptTokens": 3915,
+        "completionTokens": 84
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": null,
+      "citation_coverage": 0.0,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-007",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《资本论》这本书的作者是谁？",
+      "answer": "《资本论》的作者是**卡尔·马克思**，分类为社科，人民出版社出版，目前库存可借 4/4 [1]。\n\n需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 2280,
+      "usage": {
+        "promptTokens": 3966,
+        "completionTokens": 99
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.5,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-008",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《围城》属于哪个分类？",
+      "answer": "《围城》属于**文学**分类[1]。\n\n补充信息：作者钱锺书，人民文学出版社出版，当前库存可借 10/10[1]。需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 17418,
+      "usage": {
+        "promptTokens": 3955,
+        "completionTokens": 89
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": 0.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-009",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《程序员面试金典》现在还有库存吗？",
+      "answer": "《程序员面试金典》目前有库存，可以借阅：\n\n- 作者：Gayle Laakmann McDowell\n- 出版社：人民邮电出版社\n- 分类：计算机\n- 馆藏 5 本，可借 5 本（全部在架）\n\n需要我帮你借这本吗？",
+      "n_chunks": 0,
+      "latency_ms": 1811,
+      "usage": {
+        "promptTokens": 3932,
+        "completionTokens": 109
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": null,
+      "citation_coverage": 0.0,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-010",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《哈利·波特与密室》这本书的作者是谁？",
+      "answer": "馆藏资料里没有找到关于《哈利·波特与密室》作者的依据，我不能凭记忆编造。要不要我帮你在馆藏里检索一下这本书？",
+      "n_chunks": 0,
+      "latency_ms": 17397,
+      "usage": {
+        "promptTokens": 3829,
+        "completionTokens": 80
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.5,
+      "context_precision": 0.0,
+      "citation_accuracy": null,
+      "citation_coverage": 0.0,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-011",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《罗马帝国衰亡史》属于哪个分类？",
+      "answer": "《罗马帝国衰亡史》属于**历史**类 [1]。\n\n- 作者：爱德华·吉本\n- 出版社：商务印书馆\n- 库存：可借 4/4 [1]\n\n需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 16969,
+      "usage": {
+        "promptTokens": 3967,
+        "completionTokens": 98
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.4,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-012",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《鲁迅全集（第3卷）》现在还有库存吗？",
+      "answer": "我来帮您查一下这本书的库存情况。没有直接匹配到，我换个关键词再查一下。检索结果里只显示了第 6～10 卷，我再确认一下第 3 卷是否在馆藏中。有的，《鲁迅全集（第3卷）》目前有库存：\n\n- **书名**：鲁迅全集（第3卷）\n- **作者**：鲁迅\n- **出版社**：人民文学出版社\n- **分类**：文学\n- **库存**：可借 4 本（共 4 本）[1]\n\n需要我帮您借阅这本吗？",
+      "n_chunks": 5,
+      "latency_ms": 4048,
+      "usage": {
+        "promptTokens": 10913,
+        "completionTokens": 354
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.2,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.1,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-013",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《蒙古帝国史》这本书的作者是谁？",
+      "answer": "《蒙古帝国史》的作者是**雷纳·格鲁塞**，商务印书馆出版，分类为历史 [1]。\n\n目前馆内库存 4 本，全部可借。需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 2035,
+      "usage": {
+        "promptTokens": 4144,
+        "completionTokens": 139
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.333,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-014",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《Java核心技术》属于哪个分类？",
+      "answer": "《Java核心技术》属于**计算机**分类 [1]。\n\n补充信息：作者 Cay S. Horstmann，机械工业出版社出版，当前库存可借 4/4 [1]。需要我帮你借阅吗？",
+      "n_chunks": 5,
+      "latency_ms": 1974,
+      "usage": {
+        "promptTokens": 4445,
+        "completionTokens": 109
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.2,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-015",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《世界是平的》现在还有库存吗？",
+      "answer": "有库存。《世界是平的》（托马斯·弗里德曼，湖南科学技术出版社，经济管理类）馆藏共 5 本，当前可借 5 本，全部在架。\n\n需要我帮你借这本吗？",
+      "n_chunks": 0,
+      "latency_ms": 10076,
+      "usage": {
+        "promptTokens": 3916,
+        "completionTokens": 88
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": null,
+      "citation_coverage": 0.0,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-016",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《曾国藩家书》这本书的作者是谁？",
+      "answer": "《曾国藩家书》的作者是**曾国藩**，分类为哲学，中华书局出版，目前库存可借 4/4 [1]。\n\n需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 2796,
+      "usage": {
+        "promptTokens": 3971,
+        "completionTokens": 99
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.5,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-017",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《史蒂夫·乔布斯传》属于哪个分类？",
+      "answer": "《史蒂夫·乔布斯传》属于**传记**分类 [1]。\n\n补充信息：作者是沃尔特·艾萨克森，中信出版社出版，目前库存可借 5/5 [1]。需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 18596,
+      "usage": {
+        "promptTokens": 3972,
+        "completionTokens": 99
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-018",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《新概念英语》现在还有库存吗？",
+      "answer": "我来帮您查一下馆藏情况。有的，《新概念英语》（作者：亚历山大，外语教学与研究出版社，分类：教育）目前馆藏 6 本，可借 6 本，库存充足。\n\n需要我帮您借阅吗？",
+      "n_chunks": 0,
+      "latency_ms": 10069,
+      "usage": {
+        "promptTokens": 3920,
+        "completionTokens": 93
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": null,
+      "citation_coverage": 0.0,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-019",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《庄子今注今译》这本书的作者是谁？",
+      "answer": "《庄子今注今译》的作者是**陈鼓应**，分类为哲学，商务印书馆出版，目前库存可借 7/7 [1]。\n\n需要我帮你借这本书吗？",
+      "n_chunks": 1,
+      "latency_ms": 32982,
+      "usage": {
+        "promptTokens": 3982,
+        "completionTokens": 105
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": 0.0,
+      "citation_coverage": 0.5,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-020",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《全球通史》属于哪个分类？",
+      "answer": "《全球通史》属于**历史**分类 [1]。\n\n补充信息：作者斯塔夫里阿诺斯，北京大学出版社出版，当前库存可借 2/2 [1]。需要我帮你借阅吗？",
+      "n_chunks": 2,
+      "latency_ms": 2019,
+      "usage": {
+        "promptTokens": 4083,
+        "completionTokens": 92
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.5,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-021",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《考研英语阅读》现在还有库存吗？",
+      "answer": "有库存。《考研英语阅读》（张剑，世界图书出版公司，教育类）馆藏共 8 本，当前可借 8 本，全部在架。\n\n需要我帮你借这本吗？",
+      "n_chunks": 0,
+      "latency_ms": 1825,
+      "usage": {
+        "promptTokens": 3913,
+        "completionTokens": 85
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": null,
+      "citation_coverage": 0.0,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-022",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《董明珠：倔强营销的背后》这本书的作者是谁？",
+      "answer": "《董明珠：倔强营销的背后》的作者是**郭宏文**，分类为传记，出版社是中国戏剧出版社，目前库存可借 3/3 [1]。\n\n需要我帮你借阅这本书吗？",
+      "n_chunks": 1,
+      "latency_ms": 65846,
+      "usage": {
+        "promptTokens": 3996,
+        "completionTokens": 112
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.5,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-023",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《反脆弱》属于哪个分类？",
+      "answer": "《反脆弱》（纳西姆·尼古拉斯·塔勒布，中信出版社）在馆藏中归入 **经济管理** 分类，当前可借 6 本。\n\n需要我帮你借阅，或看看同分类的其他书吗？",
+      "n_chunks": 0,
+      "latency_ms": 17840,
+      "usage": {
+        "promptTokens": 5947,
+        "completionTokens": 137
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": null,
+      "citation_coverage": 0.0,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-024",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《夏洛的网》现在还有库存吗？",
+      "answer": "有库存。《夏洛的网》（E.B.怀特，上海译文出版社，少儿类）馆藏共 5 本，当前可借 5 本，全部在架。\n\n需要我帮你借一本吗？",
+      "n_chunks": 0,
+      "latency_ms": 2381,
+      "usage": {
+        "promptTokens": 3920,
+        "completionTokens": 89
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": null,
+      "citation_coverage": 0.0,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-025",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《丝绸之路：一部全新的世界史》这本书的作者是谁？",
+      "answer": "《丝绸之路：一部全新的世界史》的作者是**彼得·弗兰科潘**（Peter Frankopan）[1]。\n\n补充信息：该书分类为历史，由浙江大学出版社出版，目前库存可借 4/4 [1]。需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 40992,
+      "usage": {
+        "promptTokens": 3991,
+        "completionTokens": 122
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": 0.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-026",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《国富论》属于哪个分类？",
+      "answer": "《国富论》属于**社科**分类[1]。\n\n补充信息：作者是亚当·斯密，商务印书馆出版，当前库存可借 6/6[1]。需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 2284,
+      "usage": {
+        "promptTokens": 3973,
+        "completionTokens": 108
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-027",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《1Q84》现在还有库存吗？",
+      "answer": "《1Q84》（村上春树，南海出版公司，文学类）目前有库存：馆藏共 7 本，可借 7 本，现在可以直接借阅。\n\n需要我帮你借这本吗？",
+      "n_chunks": 0,
+      "latency_ms": 1698,
+      "usage": {
+        "promptTokens": 3920,
+        "completionTokens": 88
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": null,
+      "citation_coverage": 0.0,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-028",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《大败局》这本书的作者是谁？",
+      "answer": "《大败局》的作者是**吴晓波**，分类为经济管理，由浙江大学出版社出版，目前库存可借（6/6）[1]。\n\n需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 1861,
+      "usage": {
+        "promptTokens": 3974,
+        "completionTokens": 105
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": 0.0,
+      "citation_coverage": 0.5,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-029",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《人工智能：一种现代的方法》属于哪个分类？",
+      "answer": "《人工智能：一种现代的方法》属于**计算机**分类 [1]。\n\n补充信息：作者 Stuart Russell，清华大学出版社出版，当前库存可借 5/5 [1]。需要我帮你借阅吗？",
+      "n_chunks": 1,
+      "latency_ms": 2275,
+      "usage": {
+        "promptTokens": 3986,
+        "completionTokens": 111
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "book-030",
+      "category": "book",
+      "should_refuse": false,
+      "question": "《生死疲劳》现在还有库存吗？",
+      "answer": "有库存。《生死疲劳》（莫言，浙江文艺出版社，文学类）目前馆藏 6 本，可借 6 本，全部在架。\n\n需要我帮你借这本吗？",
+      "n_chunks": 0,
+      "latency_ms": 2161,
+      "usage": {
+        "promptTokens": 3912,
+        "completionTokens": 81
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": null,
+      "citation_coverage": 0.0,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-001",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "第一次借书要怎么操作？",
+      "answer": "我先查一下馆藏资料里关于借书流程的说明。第一次借书很简单，流程如下：\n\n1. **搜索图书**：在馆藏检索页按书名或作者搜索，找到想借的书 [1]。\n2. **查看详情**：进入图书详情页，确认库存状态为“可借” [1][2]。\n3. **点击借阅**：库存可借时点“借阅”即可，成功后系统会生成借阅记录 [1]。\n4. **按时归还**：请在到期日前归还 [1]。\n\n几个要点：\n- 每人最多同时借 **5 本**，单次借期 **30 天**，从借出当天起算 [2]。\n- 库存为 0 时不能直接借，只能预约或等归还 [2]；预约最多同时 3 本，按提交时间排队 [5]。\n- 到期前可续借，每本最多 1 次、每次 15 天 [4]。\n\n需要我帮你找某本书吗？比如告诉我书名或作者，我可以直接查库存并帮你借。",
+      "n_chunks": 5,
+      "latency_ms": 2988,
+      "usage": {
+        "promptTokens": 4507,
+        "completionTokens": 299
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.8,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.583,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-002",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "一次能借几本书？",
+      "answer": "每位读者最多可**同时借阅 5 本**图书，已借出但尚未归还的图书也计入这 5 本之内 [1][2][3]。单次借期为 30 天 [3]。\n\n达到上限后，需要先归还部分图书，才能继续借书 [2]。你目前没有在借图书，还可以借 5 本。需要我帮你找书吗？",
+      "n_chunks": 5,
+      "latency_ms": 2210,
+      "usage": {
+        "promptTokens": 4448,
+        "completionTokens": 136
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.8,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.6,
+      "unsupported_claims": [
+        "你目前没有在借图书，还可以借 5 本"
+      ]
+    },
+    {
+      "id": "faq-003",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "借期是多久？",
+      "answer": "借期是 **30 天**，从借出当日起算 [2]。\n\n另外补充两点：\n- 每人最多同时借 5 本 [2]\n- 到期前可续借，每本最多续借 1 次、每次 15 天，在原到期日基础上顺延；已逾期、被他人预约或已达续借上限时无法续借 [1]\n\n需要我帮你查某本书的库存或直接借书吗？",
+      "n_chunks": 2,
+      "latency_ms": 2327,
+      "usage": {
+        "promptTokens": 4123,
+        "completionTokens": 165
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.6,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-004",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "可以续借吗？续借规则是什么？",
+      "answer": "我先查一下续借规则，同时看看你当前有没有在借的书。可以续借，规则如下：\n\n- **次数与时长**：每本图书最多续借 **1 次**，每次 **15 天** [1][2]\n- **起算方式**：续借从**原到期日顺延**，不是从续借当天重新计算 [1][2]\n- **无法续借的情况**：图书已逾期、已被其他读者预约，或已达续借次数上限时，续借会失败 [1][2]\n- **借期参考**：单次借期 30 天，自借出当日起算 [3][4]\n\n不过你目前**没有在借图书**（0 条记录），所以暂时没有可以续借的书。等借了书之后，在到期前就可以办理续借。\n\n需要我帮你找找想借的书吗？",
+      "n_chunks": 5,
+      "latency_ms": 2563,
+      "usage": {
+        "promptTokens": 4562,
+        "completionTokens": 278
+      },
+      "faithfulness": 0.85,
+      "answer_relevancy": 0.9,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.444,
+      "unsupported_claims": [
+        "你目前没有在借图书（0 条记录）"
+      ]
+    },
+    {
+      "id": "faq-005",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "逾期罚金怎么算？有封顶吗？",
+      "answer": "逾期罚金的计算规则如下：\n\n- **计算标准**：每天 0.20 元，从应还日的次日开始累计 [1][3]\n- **封顶**：单笔罚金最多 20.00 元 [1][3]\n- **举例**：逾期 10 天 = 10 × 0.20 = 2.00 元；逾期满 100 天及以上，只收封顶的 20.00 元 [1][2]\n- **缴纳方式**：归还逾期图书时由系统自动计算并生成记录，可在“我的借阅 / 罚金”中查看并结清 [4]\n- **影响**：罚金未结清前，无法继续借书或续借 [3][5]\n\n你目前没有在借图书，也没有逾期记录，暂时不涉及罚金。需要我帮你查某本书的库存或借阅情况吗？",
+      "n_chunks": 5,
+      "latency_ms": 2878,
+      "usage": {
+        "promptTokens": 4540,
+        "completionTokens": 242
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 0.9,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.625,
+      "unsupported_claims": [
+        "你目前没有在借图书，也没有逾期记录，暂时不涉及罚金"
+      ]
+    },
+    {
+      "id": "faq-006",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "预约是怎么排队的？",
+      "answer": "我先查一下馆藏资料里关于预约排队的规则。预约排队规则如下：\n\n- **什么时候能预约**：只有当图书的可借库存为 0 时才能预约 [1][3]。\n- **排队顺序**：按提交预约的时间先后排队，先到先得 [1][3]。\n- **顺延机制**：前一位读者取消预约或超时未取，系统会自动把取书资格顺延给下一位排队读者 [1][3]。\n- **取书保留期**：预约图书到馆后为你保留 3 天，请在保留期内到馆取书；超时未取会自动取消并顺延给下一位 [2][4][5]。\n- **数量限制**：每位读者最多同时预约 3 本 [1][2]。\n- **取消方式**：可在“我的预约”中主动取消；已到馆待取的图书不计入在借数量 [4]。\n\n需要我帮你查某本书的库存和预约队列情况吗？",
+      "n_chunks": 5,
+      "latency_ms": 2427,
+      "usage": {
+        "promptTokens": 4473,
+        "completionTokens": 286
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-007",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "预约的书到馆后保留几天？",
+      "answer": "预约图书到馆后为读者**保留 3 天**，请在保留期内到馆取书 [1][2]。\n\n补充几点：\n- 超过 3 天未取，预约会自动取消，取书资格顺延给下一位排队读者，且不额外收取罚金 [2][4]。\n- 已到馆待取的图书不计入在借数量 [2]。\n- 每位读者最多同时预约 3 本 [3][5]。\n\n需要我帮你查某本书的库存或预约情况吗？",
+      "n_chunks": 5,
+      "latency_ms": 2112,
+      "usage": {
+        "promptTokens": 4437,
+        "completionTokens": 162
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-008",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "预约超时未取会怎样？",
+      "answer": "预约到馆后，图书会为你保留 **3 天**。如果超过保留期仍未取书，系统会自动取消该预约，并把取书资格顺延给下一位排队读者；本次取消**不会额外收取罚金** [1][2][3]。\n\n另外提醒：已到馆待取的图书不计入在借数量 [2]；每位读者最多同时预约 3 本 [4][5]。",
+      "n_chunks": 5,
+      "latency_ms": 2060,
+      "usage": {
+        "promptTokens": 4441,
+        "completionTokens": 142
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-009",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "罚金怎么交？",
+      "answer": "罚金的缴纳方式如下：\n\n- **自动生成**：罚金在你归还逾期图书时由系统自动计算并生成记录，可在「我的借阅 / 罚金」中查看并结清 [1]。\n- **未结清的影响**：罚金未结清前，通常无法继续借书或办理续借 [1][4]。\n- **计算标准**：逾期罚金按每天 0.20 元累计，从应还日次日开始计算，单笔封顶 20.00 元。例如逾期 10 天为 2.00 元；逾期 100 天及以上只收封顶的 20.00 元 [2][3][4]。\n\n你目前没有在借图书，也没有逾期记录，暂时不需要缴纳罚金。需要我帮你查一下在借情况或找书吗？",
+      "n_chunks": 4,
+      "latency_ms": 2634,
+      "usage": {
+        "promptTokens": 4409,
+        "completionTokens": 230
+      },
+      "faithfulness": 0.75,
+      "answer_relevancy": 0.9,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.429,
+      "unsupported_claims": [
+        "你目前没有在借图书，也没有逾期记录，暂时不需要缴纳罚金"
+      ]
+    },
+    {
+      "id": "faq-010",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "账号密码忘了怎么办？",
+      "answer": "忘记密码可以这样处理[1]：\n\n- 联系图书馆管理员，请其帮你重置密码；\n- 或者使用登录页的「找回」入口，按提示验证身份后自行重置。\n\n另外提醒：为保护账号安全，请不要把密码告诉他人[1]。\n\n需要我帮你查点别的吗？比如「馆里有没有《三体》」或「我借的书什么时候到期」。",
+      "n_chunks": 1,
+      "latency_ms": 2299,
+      "usage": {
+        "promptTokens": 3942,
+        "completionTokens": 131
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.333,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-011",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "管理员能做什么？",
+      "answer": "你好！我是面向读者的图书助手，主要帮你处理**找书、借还、预约**这类读者事务。关于“管理员能做什么”，这属于系统角色权限问题，我先查一下馆藏资料里有没有相关依据。根据馆藏资料 [1]，管理员可以：\n\n- 维护图书与馆藏信息\n- 办理借还书\n- 管理读者账号状态\n- 调整借阅规则（借阅上限、借期、续借、罚金、预约保留天数等）\n- 处理预约与超期记录\n- 查看操作日志\n\n不过我是面向读者的助手，这些管理操作我这边做不了。如果你想找书、查借阅、借还或预约，随时告诉我～ 例如：\n- “帮我找找《三体》有没有库存”\n- “我借的书什么时候到期？”",
+      "n_chunks": 1,
+      "latency_ms": 2741,
+      "usage": {
+        "promptTokens": 4021,
+        "completionTokens": 235
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.067,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-012",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "馆藏图书是怎么分类的？",
+      "answer": "我先查一下馆藏资料里关于分类的说明。馆藏按**学科与主题**分类，常见分类包括：文学、历史、计算机、科普、少儿、哲学、心理、经济管理、传记、艺术、教育、社科、生活等[1]。\n\n- 分类会显示在**图书详情页**[1]\n- 检索时也可以**按分类筛选**[1]\n\n需要我按某个分类帮你找书吗？比如“科幻”“文学”或“计算机”。",
+      "n_chunks": 1,
+      "latency_ms": 2343,
+      "usage": {
+        "promptTokens": 3997,
+        "completionTokens": 163
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.5,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-013",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "ISBN 是什么？",
+      "answer": "ISBN 是“国际标准书号”（International Standard Book Number）的缩写，是图书的唯一身份标识码。\n\n简单说明：\n- **作用**：全球范围内唯一标识一本书的某个版本，出版社、书店、图书馆都用它来精确识别图书。\n- **格式**：目前通用的是 13 位数字（ISBN-13），通常分为 5 段，例如 `978-7-111-12345-6`，分别代表前缀、国家/语言区、出版社、书名序号和校验位。旧版为 10 位（ISBN-10）。\n- **注意**：同一本书的不同版本（精装/平装、不同出版社）ISBN 不同。\n\n如果你想找某本书，可以直接把 ISBN 告诉我，我帮你在馆藏里检索。比如你可以问：\n- “帮我查一下 ISBN 978-7-111-12345-6 这本书有没有”\n- “馆里有没有《三体》”",
+      "n_chunks": 0,
+      "latency_ms": 2168,
+      "usage": {
+        "promptTokens": 1867,
+        "completionTokens": 198
+      },
+      "faithfulness": 0.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "citation_accuracy": null,
+      "citation_coverage": 0.0,
+      "unsupported_claims": [
+        "ISBN 是“国际标准书号”（International Standard Book Number）的缩写，是图书的唯一身份标识码。",
+        "目前通用的是 13 位数字（ISBN-13），通常分为 5 段，例如 `978-7-111-12345-6`，分别代表前缀、国家/语言区、出版社、书名序号和校验位。旧版为 10 位（ISBN-10）。",
+        "同一本书的不同版本（精装/平装、不同出版社）ISBN 不同。"
+      ]
+    },
+    {
+      "id": "faq-014",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "可以让别人代借吗？",
+      "answer": "原则上不行哦。借阅记录是和账号绑定的，需要用本人账号借书；如果确实需要代借，建议先咨询管理员、按馆内规定办理，以免产生归属不清的借阅记录 [1]。\n\n另外提醒一下：借书是在馆藏检索页找到书、库存为“可借”时点击“借阅”，成功后生成借阅记录，每人最多同时借 5 本 [2]。\n\n需要我帮你查某本书的库存吗？",
+      "n_chunks": 2,
+      "latency_ms": 2497,
+      "usage": {
+        "promptTokens": 4089,
+        "completionTokens": 150
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.5,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-015",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "书丢了怎么处理？",
+      "answer": "图书遗失的处理方式如下：\n\n- 请尽快联系管理员登记遗失情况 [1]。\n- 通常需要按图书价格或馆内规定进行赔偿，并结清相关费用 [1]。\n- 在遗失处理完成前，该书的借阅记录仍会显示为“未归还” [1]。\n\n需要我帮你查一下你当前的在借记录，确认是哪本书吗？",
+      "n_chunks": 1,
+      "latency_ms": 2068,
+      "usage": {
+        "promptTokens": 3969,
+        "completionTokens": 146
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.6,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-016",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "借书数量到上限了怎么办？",
+      "answer": "我先查一下馆藏资料里关于借阅上限的规定。借书数量到上限时，可以这样处理：\n\n1. **先归还部分图书**：每人最多同时借阅 5 本，包含所有已借未还的书；达到上限后，需要先还掉一些才能继续借 [1][2][3]。\n2. **先处理逾期罚金**：如果有逾期未还的书，建议先归还并结清罚金，再借新书 [1]。\n3. **续借不能增加可借数量**：续借只是延长借期，不会腾出借阅名额，而且每本最多续借 1 次、每次 15 天，逾期或被他人预约时续借会失败 [1][5]。\n\n另外，你当前的在借记录是 0 本，其实还没到上限。需要我帮你查一下想借的书有没有库存吗？",
+      "n_chunks": 5,
+      "latency_ms": 2814,
+      "usage": {
+        "promptTokens": 4508,
+        "completionTokens": 260
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 0.85,
+      "context_precision": 0.8,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.429,
+      "unsupported_claims": [
+        "你当前的在借记录是 0 本，其实还没到上限"
+      ]
+    },
+    {
+      "id": "faq-017",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "怎么查自己的借阅记录？",
+      "answer": "你好！查自己的借阅记录很简单，我直接帮你查就行，不需要你自己操作。我先帮你查一下当前的在借情况：已经帮你查好了：你目前**没有在借记录**（0 本，逾期 0 本）。\n\n关于“怎么查借阅记录”，说明一下：\n- 你只要直接问我，比如“我借了什么书”“什么时候到期”“有没有逾期”，我就会帮你调出在借记录，显示书名、到期时间、逾期天数和续借次数。\n- 归还时的罚金会在还书时结算，在借期间不显示金额。\n\n另外，你也可以问我：\n- “帮我找找《三体》有没有库存”\n- “借阅规则是怎样的？最多能借几本？”\n\n需要我帮你找本书吗？",
+      "n_chunks": 0,
+      "latency_ms": 2929,
+      "usage": {
+        "promptTokens": 3833,
+        "completionTokens": 184
+      },
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.5,
+      "context_precision": 0.0,
+      "citation_accuracy": null,
+      "citation_coverage": 0.0,
+      "unsupported_claims": [
+        "我直接帮你查就行，不需要你自己操作",
+        "已经帮你查好了：你目前没有在借记录（0 本，逾期 0 本）",
+        "归还时的罚金会在还书时结算，在借期间不显示金额"
+      ]
+    },
+    {
+      "id": "faq-018",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "可以跨馆借还吗？",
+      "answer": "我先查一下馆藏资料里关于跨馆借还的规定。目前系统内**不能直接办理跨馆借还**：\n\n- 系统按本馆馆藏管理借还，跨馆借还属于馆际互借业务，需要线下联系管理员确认是否支持，系统内暂不直接办理 [1]。\n\n如果你有具体想借的外馆图书，可以告诉我书名，我先帮你在本馆馆藏里查一下有没有。",
+      "n_chunks": 2,
+      "latency_ms": 2595,
+      "usage": {
+        "promptTokens": 4104,
+        "completionTokens": 160
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.5,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.25,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-019",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "最多能预约几本？",
+      "answer": "每位读者最多可同时预约 **3 本**图书 [1][2]。\n\n补充两点：\n- 预约到馆后请在 **3 天内取书**，超时未取会自动取消，并顺延给下一位排队读者 [1][2]。\n- 预约按提交时间先后排队，先到先得 [2]。\n\n你目前有 0 条生效预约，还可以预约 3 本。需要我帮你找书或预约吗？",
+      "n_chunks": 5,
+      "latency_ms": 2509,
+      "usage": {
+        "promptTokens": 4439,
+        "completionTokens": 146
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.4,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.5,
+      "unsupported_claims": [
+        "你目前有 0 条生效预约，还可以预约 3 本"
+      ]
+    },
+    {
+      "id": "faq-020",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "续借为什么会失败？",
+      "answer": "我先查一下你的在借记录和续借规则，看看具体原因。我查了一下，你目前**没有任何在借记录**（在借 0 本、逾期 0 本），所以这次续借失败并不是因为逾期或次数超限——很可能是操作的对象已经不在你的借阅列表里了。\n\n常见的续借失败原因有这几类 [1][2]：\n1. **图书已逾期**——逾期状态下不能续借 [2]\n2. **该书已被其他读者预约**——被预约时无法续借 [2]\n3. **已达续借次数上限**——每本最多续借 1 次，每次 15 天 [2][3]\n4. **账号存在未结清罚金**——需先处理罚金 [1]\n\n另外提醒一下：续借是在**原到期日基础上顺延 15 天**，不是从续借当天重新计算 [2][3]。\n\n如果你确实刚借了书，可能是记录还没同步，或者你操作的是已归还的书。方便的话告诉我书名，我帮你查一下馆藏和状态？",
+      "n_chunks": 4,
+      "latency_ms": 3361,
+      "usage": {
+        "promptTokens": 4408,
+        "completionTokens": 298
+      },
+      "faithfulness": 0.6,
+      "answer_relevancy": 0.7,
+      "context_precision": 0.75,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.6,
+      "unsupported_claims": [
+        "你目前没有任何在借记录（在借 0 本、逾期 0 本）",
+        "很可能是操作的对象已经不在你的借阅列表里了",
+        "如果你确实刚借了书，可能是记录还没同步，或者你操作的是已归还的书"
+      ]
+    },
+    {
+      "id": "faq-021",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "逾期会有什么影响？",
+      "answer": "逾期主要有以下影响：\n\n1. **产生罚金**：按每天 0.20 元累计，从应还日次日开始计算，单笔封顶 20.00 元。例如逾期 10 天罚金为 2.00 元；逾期 100 天及以上只收封顶的 20.00 元 [2][3][4]。\n2. **限制借书和续借**：罚金未结清前，无法继续借书或办理续借 [1][3][5]。\n3. **可能影响账号状态**：长期不还还可能影响账号状态，建议尽快归还 [1]。\n\n罚金会在归还时由系统自动计算并生成记录，可在“我的借阅 / 罚金”中查看并结清 [5]。\n\n你目前没有在借图书，也没有逾期记录，不用担心。需要我帮你查某本书的库存或借阅情况吗？",
+      "n_chunks": 5,
+      "latency_ms": 2631,
+      "usage": {
+        "promptTokens": 4547,
+        "completionTokens": 263
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.5,
+      "unsupported_claims": [
+        "你目前没有在借图书，也没有逾期记录，不用担心"
+      ]
+    },
+    {
+      "id": "faq-022",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "可以推荐采购图书吗？",
+      "answer": "您好！关于“推荐采购图书”，我先查一下馆藏资料里有没有相关说明。可以的！根据馆藏资料 [1]：\n\n- 您可以通过**“图书荐购”入口**提交想看的**书名、作者和推荐理由**；\n- 管理员会汇总评估后决定是否采购；\n- 荐购结果可以在**荐购记录**里查看。\n\n不过要说明一下：我目前只能帮您检索馆藏、借还书和预约，**没有直接提交荐购的工具**，所以荐购需要您到系统的“图书荐购”入口自行填写。\n\n另外，如果您想找某本书、看看馆里有没有，我可以帮您检索；如果暂时无库存，也可以帮您预约排队。需要的话告诉我书名就行～",
+      "n_chunks": 1,
+      "latency_ms": 2983,
+      "usage": {
+        "promptTokens": 3967,
+        "completionTokens": 205
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.1,
+      "unsupported_claims": [
+        "我目前只能帮您检索馆藏、借还书和预约，没有直接提交荐购的工具",
+        "如果暂时无库存，也可以帮您预约排队"
+      ]
+    },
+    {
+      "id": "faq-023",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "图书馆的开放时间是什么？",
+      "answer": "馆藏资料里关于开放时间的说明是：开放时间以馆内公告为准，通常工作日白天开放、周末部分时段开放；线上检索和借阅记录查询不受开放时间限制 [1]。\n\n建议你到馆前留意馆内公告或咨询前台，以获取当天的准确时段。需要我帮你查某本书的库存或你的借阅记录吗？",
+      "n_chunks": 1,
+      "latency_ms": 2072,
+      "usage": {
+        "promptTokens": 3937,
+        "completionTokens": 118
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.333,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-024",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "管理员可以修改借阅规则吗？",
+      "answer": "我先查一下馆藏资料里关于借阅规则和管理权限的说明。可以。管理员能在规则配置中调整借阅规则，修改后立即对新的借阅与预约生效 [1]。\n\n具体可调整的项目包括：借阅上限、借期、续借次数与天数、逾期罚金与封顶、预约上限、取书保留天数 [1]。此外，管理员还可以维护图书与馆藏信息、办理借还书、管理读者账号状态、处理预约与超期记录、查看操作日志 [2]。\n\n需要我帮你查某本书的库存，或者看看你当前的借阅情况吗？",
+      "n_chunks": 2,
+      "latency_ms": 2990,
+      "usage": {
+        "promptTokens": 4127,
+        "completionTokens": 195
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.5,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-025",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "怎么批量导入图书？",
+      "answer": "我先查一下馆藏资料里关于批量导入的说明。批量导入是**管理员**的功能，读者账号没有这个权限哦。\n\n按馆藏资料说明：管理员可在“图书管理”中使用批量导入功能，按模板填写 ISBN、书名、作者、分类、出版社、库存等字段后上传；导入时会校验 ISBN 唯一性，重复数据会被跳过或提示修正 [1]。\n\n如果你是想找书或借书，我可以帮你：\n- 例：“帮我找找《三体》有没有库存”\n- 例：“我借的书什么时候到期？”\n\n需要我帮你查点什么吗？",
+      "n_chunks": 1,
+      "latency_ms": 2950,
+      "usage": {
+        "promptTokens": 3963,
+        "completionTokens": 168
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 0.85,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.125,
+      "unsupported_claims": [
+        "读者账号没有这个权限哦"
+      ]
+    },
+    {
+      "id": "faq-026",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "读者账号有哪些状态？",
+      "answer": "我先查一下馆藏资料里关于读者账号状态的说明。根据馆藏资料 [1]，读者账号通常有以下状态：\n\n- **正常**：可正常借书、预约。\n- **冻结 / 禁用**：账号被冻结后无法借书或预约，需要联系管理员核实原因并解除。\n\n账号当前状态可以在**个人中心**查看 [1]。\n\n需要我帮你查一下你现在的在借情况或某本书的库存吗？",
+      "n_chunks": 1,
+      "latency_ms": 2412,
+      "usage": {
+        "promptTokens": 3954,
+        "completionTokens": 136
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.333,
+      "unsupported_claims": []
+    },
+    {
+      "id": "faq-027",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "超期未还的书会怎么处理？",
+      "answer": "超期未还的处理方式如下：\n\n- **进入逾期状态**：图书超过应还日期即视为逾期，系统按天累计罚金 [1][3]。\n- **罚金标准**：每天 0.20 元，从应还日次日开始计算，单笔封顶 20.00 元 [2][3]。例如逾期 10 天罚 2.00 元；逾期 100 天及以上只收封顶的 20.00 元 [2][4]。\n- **归还时结算**：罚金在归还逾期图书时由系统自动计算并生成记录，可在“我的借阅 / 罚金”中查看并结清 [5]。\n- **未结清的影响**：罚金未结清前无法继续借书或续借 [3][5]。\n- **催还提醒**：长期未还时，管理员会通过站内通知或线下方式提醒 [1]。\n\n你目前有 0 本在借、0 本逾期，暂时没有罚金问题。需要我帮你查某本书的库存或借阅情况吗？",
+      "n_chunks": 5,
+      "latency_ms": 3230,
+      "usage": {
+        "promptTokens": 4574,
+        "completionTokens": 312
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": [
+        "你目前有 0 本在借、0 本逾期，暂时没有罚金问题"
+      ]
+    },
+    {
+      "id": "faq-028",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "能举个罚金计算的例子吗？",
+      "answer": "当然可以，规则是这样的：逾期罚金按每天 0.20 元累计，从应还日次日开始计算，单笔封顶 20.00 元 [1][3]。\n\n举几个例子：\n- **逾期 10 天**：10 × 0.20 = **2.00 元** [2][3]\n- **逾期 30 天**：30 × 0.20 = **6.00 元**\n- **逾期 100 天及以上**：不再按天累加，只收封顶金额 **20.00 元** [1][3]\n\n另外提醒两点：\n- 罚金在**归还图书时**由系统自动计算生成，可在“我的借阅 / 罚金”里查看并结清 [5]；\n- 罚金未结清前，无法继续借书或续借 [3][4]。\n\n需要我帮你查一下当前在借图书的到期情况吗？",
+      "n_chunks": 5,
+      "latency_ms": 2998,
+      "usage": {
+        "promptTokens": 4560,
+        "completionTokens": 276
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.556,
+      "unsupported_claims": [
+        "逾期 30 天：30 × 0.20 = 6.00 元"
+      ]
+    },
+    {
+      "id": "faq-029",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "怎么取消预约？",
+      "answer": "我先查一下馆藏资料里关于取消预约的规定。取消预约的方法如下：\n\n- 在「我的预约」中选中对应记录，点击取消即可；取消后预约名额会释放，取书资格顺延给下一位排队读者，已到馆待取的预约也可以取消 [1]。\n- 预约图书到馆后保留 3 天，超过保留期未取，系统会自动取消并顺延给下一位读者 [2][3]。\n- 超时未取导致的自动取消不会额外收取罚金 [3]。\n\n另外提醒一下：你目前没有生效中的预约记录，所以暂时没有需要取消的预约。需要我帮你查某本书的库存或预约情况吗？",
+      "n_chunks": 3,
+      "latency_ms": 14502,
+      "usage": {
+        "promptTokens": 4218,
+        "completionTokens": 210
+      },
+      "faithfulness": 0.75,
+      "answer_relevancy": 0.9,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.429,
+      "unsupported_claims": [
+        "你目前没有生效中的预约记录，所以暂时没有需要取消的预约"
+      ]
+    },
+    {
+      "id": "faq-030",
+      "category": "faq",
+      "should_refuse": false,
+      "question": "借阅记录会保留多久？",
+      "answer": "借阅记录会**长期保留**在系统中，用于查询历史借阅、统计与纠纷核对；归还后记录仍可查询，管理员可查看全馆借阅与操作日志 [1]。\n\n另外，你登录后进入「我的借阅」就能查看在借、已归还和逾期的记录，包括借出日期、应还日期、续借次数和罚金状态 [2]。\n\n需要我帮你查一下当前的在借情况吗？",
+      "n_chunks": 5,
+      "latency_ms": 3754,
+      "usage": {
+        "promptTokens": 4434,
+        "completionTokens": 138
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.4,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "refuse-001",
+      "category": "refuse",
+      "should_refuse": true,
+      "question": "图书馆的 WiFi 密码是多少？",
+      "answer": "我先查一下馆藏资料里有没有相关说明。馆藏资料里没有找到 WiFi 密码的相关依据，只检索到一条关于“账号密码忘记怎么办”的说明（联系管理员重置或使用登录页找回入口）[1]，与 WiFi 无关。\n\n所以这个信息我无法提供，建议直接咨询图书馆前台或管理员。\n\n另外，我可以帮你做这些事：\n- 查馆藏、看某本书的库存和预约队列\n- 查你的在借记录、到期时间、逾期情况\n- 借书 / 还书 / 预约\n\n比如你可以问：“有没有《三体》？”“我借的书什么时候到期？”",
+      "n_chunks": 1,
+      "latency_ms": 2968,
+      "usage": {
+        "promptTokens": 3970,
+        "completionTokens": 196
+      },
+      "refused": true,
+      "hallucinated": false
+    },
+    {
+      "id": "refuse-002",
+      "category": "refuse",
+      "should_refuse": true,
+      "question": "馆长叫什么名字、年薪多少？",
+      "answer": "馆藏资料里没有馆长姓名和薪资这类信息，我这边也查不到，无法回答。\n\n我能帮你做的是图书相关的事，比如：\n- 查馆藏、库存：「有没有《三体》？现在能借吗？」\n- 查你的借阅：「我借的书什么时候到期？有没有逾期？」\n- 借阅规则：「逾期罚金怎么算？能续借几次？」\n\n需要我帮你查点什么吗？",
+      "n_chunks": 0,
+      "latency_ms": 1471,
+      "usage": {
+        "promptTokens": 1870,
+        "completionTokens": 90
+      },
+      "refused": true,
+      "hallucinated": false
+    },
+    {
+      "id": "refuse-003",
+      "category": "refuse",
+      "should_refuse": true,
+      "question": "帮我推荐几只明天会涨的股票",
+      "answer": "我是云阁图书管理系统的图书助手，只能帮你处理找书、借还书、预约和借阅规则这类馆藏相关的事，股票推荐不在我的能力范围内，也没法预测行情，抱歉啦。\n\n不过如果你对投资理财类图书感兴趣，我可以帮你查查馆藏，比如：\n\n- “帮我找找有没有讲股票投资入门的书”\n- “馆藏里有哪些理财类的书？”\n\n需要的话告诉我，我这就去检索。",
+      "n_chunks": 0,
+      "latency_ms": 1486,
+      "usage": {
+        "promptTokens": 1871,
+        "completionTokens": 95
+      },
+      "refused": true,
+      "hallucinated": false
+    },
+    {
+      "id": "refuse-004",
+      "category": "refuse",
+      "should_refuse": true,
+      "question": "明天北京天气怎么样？",
+      "answer": "抱歉，我是云阁图书管理系统的图书助手，只能帮你处理图书相关的事情，查不了天气哦。\n\n我可以帮你：\n- 找书、查库存，比如「有没有《三体》？」\n- 查你的借阅记录和到期时间，比如「我借的书什么时候到期？」\n- 借书、还书、预约，比如「帮我借《人类简史》」\n\n需要我帮你做点什么吗？",
+      "n_chunks": 0,
+      "latency_ms": 1636,
+      "usage": {
+        "promptTokens": 1868,
+        "completionTokens": 88
+      },
+      "refused": true,
+      "hallucinated": false
+    },
+    {
+      "id": "refuse-005",
+      "category": "refuse",
+      "should_refuse": true,
+      "question": "这本书的作者有没有犯罪记录？",
+      "answer": "这个问题我无法回答，也不适合回答。\n\n原因有两点：\n1. 作者的犯罪记录属于个人隐私信息，不在图书馆馆藏资料范围内，我没有这类数据来源；\n2. 即使能查到，我也不会基于个人背景信息对作者做评价。\n\n如果你是想了解某本书的内容、馆藏情况或借阅规则，我可以帮你。比如：\n- “帮我找找刘慈欣的《三体》有没有库存”\n- “我的借阅记录里有没有快到期的书”\n\n需要我帮你查点什么吗？",
+      "n_chunks": 0,
+      "latency_ms": 1803,
+      "usage": {
+        "promptTokens": 1869,
+        "completionTokens": 109
+      },
+      "refused": true,
+      "hallucinated": false
+    },
+    {
+      "id": "refuse-006",
+      "category": "refuse",
+      "should_refuse": true,
+      "question": "图书馆大楼是哪一年建的、造价多少？",
+      "answer": "馆藏资料里没有找到关于图书馆大楼建造年份和造价的依据，我不能凭空猜测。\n\n要不要我帮你在馆藏里检索相关图书？或者你也可以问我借阅规则、库存查询、借还书之类的问题。",
+      "n_chunks": 0,
+      "latency_ms": 2982,
+      "usage": {
+        "promptTokens": 3825,
+        "completionTokens": 93
+      },
+      "refused": true,
+      "hallucinated": false
+    },
+    {
+      "id": "refuse-007",
+      "category": "refuse",
+      "should_refuse": true,
+      "question": "帮我写一段 Python 快速排序代码",
+      "answer": "快速排序（Quicksort）是一种分治排序算法，平均时间复杂度 O(n log n)。下面给你一个清晰、可直接运行的实现：\n\n```python\ndef quicksort(arr):\n    \"\"\"快速排序（返回新列表，不修改原列表）\"\"\"\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[len(arr) // 2]          # 取中间元素作为基准\n    left   = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right  = [x for x in arr if x > pivot]\n    return quicksort(left) + middle + quicksort(right)\n\n\nif __name__ == \"__main__\":\n    data = [3, 6, 8, 10, 1, 2, 1]\n    print(quicksort(data))   # [1, 1, 2, 3, 6, 8, 10]\n```\n\n如果你想要**原地排序**（更省内存，工程中更常用）的版本：\n\n```python\ndef quicksort_inplace(arr, low=0, high=None):\n    if high is None:\n        high = len(arr) - 1\n    if low < high:\n        p = partition(arr, low, high)\n        quicksort_inplace(arr, low, p - 1)\n        quicksort_inplace(arr, p + 1, high)\n    return arr\n\n\ndef partition(arr, low, high):\n    pivot = arr[high]          # 取最后一个元素为基准\n    i = low - 1\n    for j in range(low, high):\n        if arr[j] <= pivot:\n            i += 1\n            arr[i], arr[j] = arr[j], arr[i]\n    arr[i + 1], arr[high] = arr[high], arr[i + 1]\n    return i + 1\n\n\nif __name__ == \"__main__\":\n    data = [3, 6, 8, 10, 1, 2, 1]\n    quicksort_inplace(data)\n    print(data)                # [1, 1, 2, 3, 6, 8, 10]\n```\n\n几点说明：\n- **基准选择**：取中间或随机元素可降低最坏情况（已排序数组）退化为 O(n²) 的概率。\n- **稳定性**：快速排序不稳定；需要稳定排序可用 `sorted()` 或归并排序。\n- **实际使用**：Python 内置的 `list.sort()` / `sorted()` 用的是 Timsort，通常比手写快排更快，生产环境建议直接用。\n\n需要我加上**随机化基准**、**三路快排**（处理大量重复元素）或**测试用例**吗？另外，如果你想找算法相关的书，我也可以帮你在馆藏里检索。",
+      "n_chunks": 0,
+      "latency_ms": 3536,
+      "usage": {
+        "promptTokens": 1871,
+        "completionTokens": 615
+      },
+      "refused": false,
+      "hallucinated": false
+    },
+    {
+      "id": "refuse-008",
+      "category": "refuse",
+      "should_refuse": true,
+      "question": "最近有什么好看的电影推荐？",
+      "answer": "你好！我是云阁图书管理系统的图书助手，主要负责馆藏图书的检索、借阅、预约和借阅规则咨询，电影推荐这块我帮不上忙哦～\n\n不过如果你想找电影相关的书，我可以帮你查，比如：\n- “帮我找找有没有讲电影史/影评的书”\n- “有没有《xxx》的原著小说？”\n\n需要我帮你搜搜看吗？",
+      "n_chunks": 0,
+      "latency_ms": 1845,
+      "usage": {
+        "promptTokens": 1869,
+        "completionTokens": 82
+      },
+      "refused": true,
+      "hallucinated": false
+    },
+    {
+      "id": "refuse-009",
+      "category": "refuse",
+      "should_refuse": true,
+      "question": "这本书的电子版下载地址在哪里？",
+      "answer": "您好！您没有说明具体是哪本书，方便告诉我书名或作者吗？\n\n另外需要说明：我这边能查的是馆藏纸质书的检索、库存、借阅/预约等，**电子版下载地址这类信息我无法提供**，建议您到图书馆官网的电子资源/数据库入口查看。\n\n如果您想找某本书的纸质馆藏，我可以帮您查库存和可借状态，比如：\n- “帮我查一下《三体》有没有货”\n- “刘慈欣的书馆里有几本可借”",
+      "n_chunks": 0,
+      "latency_ms": 2151,
+      "usage": {
+        "promptTokens": 1871,
+        "completionTokens": 111
+      },
+      "refused": true,
+      "hallucinated": false
+    },
+    {
+      "id": "refuse-010",
+      "category": "refuse",
+      "should_refuse": true,
+      "question": "读者卡里的余额可以提现吗？",
+      "answer": "我先查一下馆藏资料里关于读者卡余额的规定。馆藏资料里没有找到关于读者卡余额能否提现的依据，我不能凭猜测回答。\n\n要不要我帮你在馆藏里检索相关图书，或者你换个问法（比如“罚金怎么缴纳”“借阅规则”）我再查一次？",
+      "n_chunks": 0,
+      "latency_ms": 3069,
+      "usage": {
+        "promptTokens": 3854,
+        "completionTokens": 127
+      },
+      "refused": true,
+      "hallucinated": false
+    },
+    {
+      "id": "rule-001",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "一个人最多可以同时借几本书？",
+      "answer": "每位读者最多可同时借阅 **5 本**图书，借阅数量包含所有已借未还的图书 [1]。\n\n补充几点相关规则：\n- 单次借期 30 天，自借出当日起算 [1]\n- 每本最多续借 1 次，每次 15 天，在原到期日基础上顺延 [2]\n- 可借库存为 0 时只能预约，最多同时预约 3 本 [1][3]\n\n需要我帮你查查想借的书有没有库存吗？",
+      "n_chunks": 3,
+      "latency_ms": 2802,
+      "usage": {
+        "promptTokens": 4256,
+        "completionTokens": 185
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.333,
+      "citation_accuracy": 0.333,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "rule-002",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "一本书一次可以借多久？",
+      "answer": "一本书单次借期是 **30 天**，从借出当天开始计算 [1][4]。\n\n如果到期前还没看完，可以续借：每本最多续借 **1 次**，每次 **15 天**，并且是从原到期日往后顺延，而不是从续借当天重新算 [2][3]。注意：图书已逾期或已被其他读者预约时，续借会失败 [3]。\n\n需要我帮你查查某本书的库存，或者看看你现在的在借情况吗？",
+      "n_chunks": 5,
+      "latency_ms": 2654,
+      "usage": {
+        "promptTokens": 4462,
+        "completionTokens": 159
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.8,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.75,
+      "unsupported_claims": []
+    },
+    {
+      "id": "rule-003",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "一本书最多可以续借几次？",
+      "answer": "每本图书最多可以续借 **1 次**，每次续借 **15 天** [1][2]。\n\n补充几点：\n- 续借是在**原到期日**基础上顺延，不是从续借当天重新计算 [1][2]。\n- 如果图书**已逾期**、**已被其他读者预约**，或**已达续借次数上限**，续借会失败 [2]。\n- 单次借期本身是 30 天，从借出当天起算 [3][4]。\n\n需要我帮你查一下当前在借图书的到期时间吗？",
+      "n_chunks": 5,
+      "latency_ms": 2442,
+      "usage": {
+        "promptTokens": 4488,
+        "completionTokens": 199
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.8,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "rule-004",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "每次续借可以延长多少天？",
+      "answer": "每次续借可以延长 **15 天**，每本图书最多续借 1 次；续借后的到期日是在原到期日基础上顺延，而不是从续借当天重新计算[1]。\n\n另外提醒：图书已逾期、已被其他读者预约或已达续借次数上限时，续借会失败[1]。",
+      "n_chunks": 2,
+      "latency_ms": 2493,
+      "usage": {
+        "promptTokens": 4129,
+        "completionTokens": 138
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.5,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 1.0,
+      "unsupported_claims": []
+    },
+    {
+      "id": "rule-005",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "逾期罚金每天多少钱？",
+      "answer": "逾期罚金标准如下：\n\n- **每天 0.20 元**，从应还日次日开始累计 [1][3]\n- **单笔封顶 20.00 元** [1][3]\n- 举例：逾期 10 天 = 2.00 元；逾期 100 天及以上只收封顶的 20.00 元 [1][2]\n- 罚金在归还时自动结算，未结清前无法继续借书或续借 [3][5]\n\n你目前没有在借图书，也没有逾期记录，暂时不涉及罚金。需要我帮你查某本书的库存或借阅吗？",
+      "n_chunks": 5,
+      "latency_ms": 2627,
+      "usage": {
+        "promptTokens": 4557,
+        "completionTokens": 215
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.8,
+      "citation_accuracy": 0.75,
+      "citation_coverage": 0.571,
+      "unsupported_claims": [
+        "你目前没有在借图书，也没有逾期记录，暂时不涉及罚金"
+      ]
+    },
+    {
+      "id": "rule-006",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "逾期罚金最高封顶多少？",
+      "answer": "逾期罚金**单笔封顶 20.00 元**。\n\n具体规则[1]：\n- 逾期罚金按每天 0.20 元累计，从应还日次日开始计算；\n- 单笔罚金最高 20.00 元，例如逾期 10 天为 2.00 元，逾期满 100 天及以上也只收 20.00 元；\n- 罚金未结清前无法继续借书或续借。\n\n需要我帮你查一下当前有没有在借或逾期的书吗？",
+      "n_chunks": 1,
+      "latency_ms": 2138,
+      "usage": {
+        "promptTokens": 4029,
+        "completionTokens": 189
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.167,
+      "unsupported_claims": []
+    },
+    {
+      "id": "rule-007",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "最多可以同时预约几本书？",
+      "answer": "每位读者最多可以**同时预约 3 本**图书 [1][2]。\n\n补充两点：\n- 只有可借库存为 0 时才能预约，按提交时间先后排队、先到先得 [2]；\n- 预约到馆后请在 **3 天内取书**，超时未取会自动取消并顺延给下一位 [1]。\n\n你目前生效预约 0 条，还有 3 个名额可用。需要我帮你找书或预约吗？",
+      "n_chunks": 5,
+      "latency_ms": 10820,
+      "usage": {
+        "promptTokens": 4441,
+        "completionTokens": 153
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.4,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.5,
+      "unsupported_claims": [
+        "你目前生效预约 0 条，还有 3 个名额可用"
+      ]
+    },
+    {
+      "id": "rule-008",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "预约到书后保留几天，过期会怎样？",
+      "answer": "预约图书到馆后，会为您保留 **3 天**，请在保留期内到馆取书 [2][3]。\n\n如果超过保留期仍未取书：\n- 预约会被系统**自动取消**，取书资格顺延给下一位排队读者 [1][3]；\n- 本次取消**不会额外收取罚金** [1]。\n\n另外提醒：已到馆待取的图书不计入在借数量 [3]；预约也可在“我的预约”中主动取消 [3]。",
+      "n_chunks": 5,
+      "latency_ms": 10654,
+      "usage": {
+        "promptTokens": 4466,
+        "completionTokens": 156
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.8,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.8,
+      "unsupported_claims": []
+    },
+    {
+      "id": "rule-009",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "逾期罚金是怎么计算的，能举个例子吗？",
+      "answer": "逾期罚金的计算方式如下：\n\n- **标准**：每天 0.20 元，从应还日期的**次日**开始累计 [3]\n- **封顶**：单笔罚金最多 20.00 元 [1][3]\n- **结算**：归还图书时由系统自动计算并生成记录，可在“我的借阅 / 罚金”中查看并结清 [5]\n- **影响**：罚金未结清前，无法继续借书或续借 [3][4]\n\n**举例**：\n- 逾期 10 天：10 × 0.20 = **2.00 元** [2]\n- 逾期 100 天及以上：按封顶只收 **20.00 元** [1][3]\n\n你目前没有在借图书，也没有逾期记录，暂时不涉及罚金。需要我帮你查某本书的库存或借阅吗？",
+      "n_chunks": 5,
+      "latency_ms": 2997,
+      "usage": {
+        "promptTokens": 4564,
+        "completionTokens": 270
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.6,
+      "unsupported_claims": [
+        "你目前没有在借图书，也没有逾期记录，暂时不涉及罚金"
+      ]
+    },
+    {
+      "id": "rule-010",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "借阅到期了还没还，会有什么后果？",
+      "answer": "图书到期未还，主要会有以下后果：\n\n**1. 产生逾期罚金**\n- 超过应还日期未还即视为逾期，罚金按 **每天 0.20 元** 累计，从应还日次日开始计算，**单笔封顶 20.00 元** [1][5]。\n- 举例：逾期 10 天 = 10 × 0.20 = 2.00 元；逾期 100 天及以上只收封顶的 20.00 元 [3][5]。\n\n**2. 影响继续借书和续借**\n- 罚金未结清前，无法继续借书或办理续借 [1][2][4]。\n\n**3. 可能影响账号状态**\n- 长期不还还可能影响账号状态，建议尽快归还 [2]。\n\n**罚金怎么交**：归还逾期图书时由系统自动计算并生成记录，可在「我的借阅 / 罚金」中查看并结清 [4]。\n\n需要我帮你查一下当前在借记录和到期时间吗？",
+      "n_chunks": 5,
+      "latency_ms": 2796,
+      "usage": {
+        "promptTokens": 4544,
+        "completionTokens": 281
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.5,
+      "unsupported_claims": []
+    },
+    {
+      "id": "rule-011",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "续借有什么限制条件？",
+      "answer": "续借的限制条件如下：\n\n- **次数**：每本图书最多续借 **1 次**，每次续借 **15 天** [1][2]\n- **计算方式**：续借后的到期日从**原到期日**往后顺延，不是从续借当天重新计算 [1][2]\n- **办理时间**：需要在图书**到期前**办理 [1]\n- **会失败的情况**：图书已逾期、已被其他读者预约，或已达续借次数上限时，续借会失败 [1][2]\n- **补充**：续借不会增加在借数量，但仍需满足上述条件 [3]\n\n另外提醒一下，单次借期是 30 天，从借出当天起算 [4][5]。你目前没有在借图书，等借了书之后如果需要续借，随时可以找我。",
+      "n_chunks": 5,
+      "latency_ms": 2568,
+      "usage": {
+        "promptTokens": 4461,
+        "completionTokens": 231
+      },
+      "faithfulness": 0.95,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.75,
+      "unsupported_claims": [
+        "你目前没有在借图书"
+      ]
+    },
+    {
+      "id": "rule-012",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "书还回来以后，预约队列会怎么处理？",
+      "answer": "书归还后，预约队列的处理方式如下：\n\n- **按排队顺序顺延**：预约按提交时间先后排队、先到先得；前一位读者取消预约或超时未取，系统会自动把取书资格顺延给下一位排队读者 [3][4]。\n- **到馆后保留 3 天**：预约图书到馆后为读者保留 3 天，请在保留期内到馆取书 [1][2]。\n- **超时未取自动取消**：超过 3 天未取，预约会自动取消，取书资格顺延给下一位排队读者，且本次取消不额外收取罚金 [1][5]。\n- **待取书不计入在借**：已到馆待取的图书不计入在借数量 [1]。\n\n需要我帮你查某本书的预约队列情况吗？",
+      "n_chunks": 5,
+      "latency_ms": 2438,
+      "usage": {
+        "promptTokens": 4455,
+        "completionTokens": 232
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 0.8,
+      "context_precision": 0.8,
+      "citation_accuracy": 0.8,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    },
+    {
+      "id": "rule-013",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "当前借阅规则里，借期和续借期分别是多少？",
+      "answer": "当前借阅规则如下：\n\n- **借期**：单次借期 **30 天**，自借出当日起算；每位读者最多可同时借阅 5 本（含所有已借未还的图书）[2]。\n- **续借**：每本图书最多续借 **1 次**，每次 **15 天**；续借后是在原到期日基础上顺延，而不是从续借当天重新计算。若图书已逾期、已被其他读者预约或已达续借次数上限，续借会失败[1]。\n\n需要我帮你查一下当前在借图书的到期时间吗？",
+      "n_chunks": 3,
+      "latency_ms": 2550,
+      "usage": {
+        "promptTokens": 4273,
+        "completionTokens": 206
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.667,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.4,
+      "unsupported_claims": []
+    },
+    {
+      "id": "rule-014",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "罚金是按天算还是按本算？",
+      "answer": "罚金是**按天计算**的，不是按本计算：\n\n- 逾期罚金按每天 **0.20 元**累计，从应还日的**次日**开始计算 [1][3]\n- **单笔**罚金封顶 **20.00 元**（即每本逾期图书各自封顶）[1][3]\n- 举例：逾期 10 天 = 10 × 0.20 = 2.00 元；逾期 100 天及以上只收封顶的 20.00 元 [2][3]\n- 罚金在归还逾期图书时由系统自动结算，未结清前无法继续借书或续借 [3][5]\n\n所以如果同时有多本逾期，是每本分别按天累计、各自封顶 20 元。需要我帮你查一下当前在借记录吗？",
+      "n_chunks": 5,
+      "latency_ms": 11521,
+      "usage": {
+        "promptTokens": 4571,
+        "completionTokens": 266
+      },
+      "faithfulness": 0.9,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.8,
+      "citation_accuracy": 0.75,
+      "citation_coverage": 0.571,
+      "unsupported_claims": [
+        "即每本逾期图书各自封顶",
+        "如果同时有多本逾期，是每本分别按天累计、各自封顶 20 元"
+      ]
+    },
+    {
+      "id": "rule-015",
+      "category": "rule",
+      "should_refuse": false,
+      "question": "待取书的保留时长是多少，超时怎么顺延？",
+      "answer": "**待取书保留 3 天**，超时处理如下：\n\n- 预约图书到馆后，系统会为你保留 **3 天**，请在保留期内到馆取书 [1][4]。\n- 超过保留期仍未取书，系统会**自动取消**该预约，并把取书资格**顺延给下一位排队读者** [1][2][3]。\n- 这种超时取消**不会额外收取罚金** [2]。\n- 另外，已到馆待取的图书**不计入在借数量** [1]；你也可以在“我的预约”里主动取消预约 [1]。\n\n需要我帮你查一下当前有没有待取的书，或者帮你预约某本书吗？",
+      "n_chunks": 5,
+      "latency_ms": 2454,
+      "usage": {
+        "promptTokens": 4462,
+        "completionTokens": 207
+      },
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "citation_accuracy": 1.0,
+      "citation_coverage": 0.667,
+      "unsupported_claims": []
+    }
+  ]
+}

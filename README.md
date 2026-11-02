@@ -79,6 +79,7 @@ cd backend && mvn spring-boot:run
 | RAG 向量索引（通义 embedding） | `cd ai-service && .venv/bin/python scripts/index_corpus.py --provider dashscope` | 535×1024，18.2 s（幂等） |
 | RAG 检索评测 | `cd ai-service && .venv/bin/python scripts/run_eval.py` | BM25: R@5 0.973/MRR 0.859；向量: 1.000/0.916；混合: 1.000/0.883；BM25+重排: 0.973/0.884。详见 [docs/RAG评测报告.md](docs/RAG评测报告.md) |
 | RAG 端到端（真模型） | `ai-service/.venv/bin/python scripts/e2e_rag.py` | 5 类问题全绿：知识问答带 `[1]` 引用、馆藏类走 search_books、无关问题明确拒答 |
+| RAG 答案层评测（LLM-as-judge） | `ai-service/.venv/bin/python scripts/eval_answers.py` | faithfulness **0.940** / relevancy 0.971 / 引用准确率 **0.913** / 拒答 9-10，见报告 §13 |
 
 > 当前默认 `LLM_PROVIDER=mock`（离线、无需 Key、回复确定性），方便演示与 CI；换成 DeepSeek/Qwen 只需改 `.env` 两行。
 
