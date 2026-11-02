@@ -13,12 +13,12 @@
 | 超时 | 每个 job `timeout-minutes: 15` | 防止依赖下载卡死白占 runner |
 | 密钥 | **无任何 Secret** | 所有测试离线，见 §4；需要真实 Key 的 `scripts/eval_answers.py` 不接入 CI |
 
-## 2. 四个并行 job
+## 2. 五个并行 job
 
 | job | 核心命令 | 覆盖 | 依赖服务 |
 |---|---|---|---|
 | `backend` | `cd backend && mvn -B clean test` | 71 个 Mockito 单测 | 无（纯单元测试，不需要 MySQL/Redis） |
-| `ai-service` | `python -m pytest ai-service -q` | 312 个测试（全离线） | 无（mock 模型 + MockTransport + fakeredis） |
+| `ai-service` | `python -m pytest ai-service -q` | 319 个测试（全离线） | 无（mock 模型 + MockTransport + fakeredis） |
 | `frontend` | `cd frontend && npm ci && npm run build` | Vue3 + Vite 生产构建 | 无 |
 | `rag-eval` | `RAG_RETRIEVAL_MODE=bm25 RAG_RERANK_ENABLED=false python scripts/run_eval.py --min-recall 0.95` | 检索层 Recall@5 门禁 | 无（仓库内语料 + 本地 BM25） |
 
@@ -59,7 +59,7 @@ RAG_RETRIEVAL_MODE=bm25 RAG_RERANK_ENABLED=false \
 
 ## 4. 为什么 AI 服务测试能「全离线」
 
-312 个测试不依赖网络、API Key、MySQL、Redis，靠三层替身：
+319 个测试不依赖网络、API Key、MySQL、Redis，靠三层替身：
 
 | 外部依赖 | 替身 | 位置 |
 |---|---|---|
@@ -90,15 +90,15 @@ RAG_RETRIEVAL_MODE=bm25 RAG_RERANK_ENABLED=false \
 | 检查 | 结果 |
 |---|---|
 | 后端 `mvn -B clean test`（JDK 17） | `Tests run: 71, Failures: 0, Errors: 0` / `BUILD SUCCESS`（11.7s，热 Maven 缓存） |
-| AI 服务 `python -m pytest ai-service -q` | `312 passed in 8.55s` |
+| AI 服务 `python -m pytest ai-service -q` | `319 passed in 8.55s` |
 | 前端 `npm run build`（`npm ci` 已在干净树验证） | `✓ built in 5.03s` |
 | RAG 门禁（BM25） | `Recall@5=0.9733  MRR=0.8593`，`--min-recall 0.95` 通过（exit 0） |
 
-另外做了一次**干净检出模拟**：把仓库按 `.gitignore` 剔除 `.venv`、`node_modules`、`data/embeddings`、`backend/target`、`.env` 后复制到临时目录，用全新 venv 只装 CI 依赖子集逐个复跑——4 个 job 全部通过（`312 passed`、`71 tests`、前端构建成功、`Recall@5=0.9733`）。
+另外做了一次**干净检出模拟**：把仓库按 `.gitignore` 剔除 `.venv`、`node_modules`、`data/embeddings`、`backend/target`、`.env` 后复制到临时目录，用全新 venv 只装 CI 依赖子集逐个复跑——5 个 job 全部通过（`319 passed`、`71 tests`、前端构建成功、`Recall@5=0.9733`）。
 
 ## 7. 常见排查
 
-- **首次 push 后**：GitHub 仓库 Actions 页签查看 4 个 job；本地命令与 CI 一一对应（§3），失败时先本地复现；
+- **首次 push 后**：GitHub 仓库 Actions 页签查看 5 个 job；本地命令与 CI 一一对应（§3），失败时先本地复现；
 - **AI job 报 `ModuleNotFoundError`**：说明测试新增了第三方 import，把对应包 pin 进 `.github/ci/ai-service-ci-requirements.txt`；
 - **RAG 门禁失败**：看日志里 `未召回样例` 与 `by_category` 表格；阈值与评测集在 `ai-service/scripts/run_eval.py`、`ai-service/eval/golden_qa.jsonl`；
 - **前端 job 慢/失败**：`npm ci` 依赖 `package-lock.json`（不要手改）；`frontend/.npmrc` 用的是 npmmirror 镜像，lockfile 中多数包指向官方源，二者混用时以 lockfile 的 `resolved` 为准。

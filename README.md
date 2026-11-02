@@ -17,7 +17,7 @@
 | **Agent 工具调用 + 人在回路** | 7 个工具、写操作确认卡、越权拦截；端到端 **16 项断言**全绿（`scripts/e2e_ai.py`） |
 | **RAG 检索质量** | 535 块语料；向量检索 **Recall@5 1.000 / MRR 0.916**；rule 类 MRR 0.394 → 0.578 |
 | **RAG 答案质量** | faithfulness **0.940** / answer relevancy **0.971** / 引用准确率 **0.913** / 拒答 **9/10** |
-| **工程规范** | 后端 **71** 个单测 + AI 服务 **312** 个单测（全离线）；CI 三 job |
+| **工程规范** | 后端 **71** 个单测 + AI 服务 **319** 个单测（全离线）；CI 五 job |
 | **性能与成本** | 模型 TTFT **P50 897 ms**、输出 **84 字/秒**；单轮对话 **≈¥0.0094**（每千次 ≈¥9.4） |
 | **可观测与容错** | SSE 流式、模型网关降级、Redis 会话跨重启、重排/向量/Redis 全部可优雅降级 |
 
@@ -140,7 +140,7 @@ cd backend && mvn spring-boot:run
 | 验证项 | 命令 | 结果 |
 |---|---|---|
 | 后端单测 | `cd backend && mvn -B clean test` | 71 passed |
-| AI 服务单测（全离线） | `ai-service/.venv/bin/python -m pytest ai-service -q` | 312 passed |
+| AI 服务单测（全离线） | `ai-service/.venv/bin/python -m pytest ai-service -q` | 319 passed |
 | Agent 端到端（身份/确认/落库） | `ai-service/.venv/bin/python scripts/e2e_ai.py` | 16 项断言全绿 |
 | RAG 端到端（真模型） | `ai-service/.venv/bin/python scripts/e2e_rag.py` | 5 类问题全绿 |
 | RAG 语料 / 索引 | `scripts/build_corpus.py` / `index_corpus.py` | 535 块 / 535×1024（幂等） |
@@ -173,7 +173,7 @@ cd backend && mvn spring-boot:run
 │   ├── app/tools/            # 7 个工具（schema + executor + 阈值）
 │   ├── app/rag/              # 语料/BM25/embedding/向量库/重排/检索服务
 │   ├── scripts/              # 建语料、建索引、评测、基准
-│   └── tests/                # 312 个离线测试
+│   └── tests/                # 319 个离线测试
 ├── frontend/                 # Vue 3 + Element Plus（含对话页与引用卡片）
 ├── docs/                     # 契约、任务清单、RAG 评测、性能成本、ADR、截图
 ├── scripts/                  # dev_up/dev_down、e2e、截图、模型自检、基准
@@ -263,3 +263,4 @@ java -jar backend/target/library-server.jar
 | [docs/凭据轮换清单.md](docs/凭据轮换清单.md) | 需要轮换的账号、步骤、验证清单 |
 | [docs/MCP集成说明.md](docs/MCP集成说明.md) | MCP Server 的 7 个工具、鉴权、接入方式 |
 | [docs/投递前检查清单.md](docs/投递前检查清单.md) | 投递前的 10 分钟自查（含必须你本人做的 3 件事） |
+| [docs/简历项目文案-终稿.md](docs/简历项目文案-终稿.md) | 可直接粘贴的简历项目段（三个岗位变体） |
