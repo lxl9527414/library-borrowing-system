@@ -192,8 +192,7 @@ cd backend && mvn spring-boot:run
 | 角色 | 用户名 | 密码 |
 |---|---|---|
 | 管理员 | `admin` | `admin123` |
-| 读者 | `reader` | `reader123` |
-| 读者 | `reader2` ~ `reader5` | `reader123` |
+| 读者 | `reader` ~ `reader20`（共 20 个） | `reader123` |
 
 > 这是 `data.sql` 里的种子账号，供全新环境使用；你自己的 `.env` 里可以配置本地演示账号（`DEMO_USER/DEMO_PASSWORD`），
 > 脚本会优先读它。
@@ -203,7 +202,7 @@ cd backend && mvn spring-boot:run
 ## 本地环境
 
 - JDK 17+、Maven 3.9+、Node.js 20+、MySQL 8.x、Redis 6+
-- 数据库会自动执行 `schema.sql` 与 `data.sql`（幂等写入 1 个管理员、5 个读者、500 本示例图书）
+- 数据库会自动执行 `schema.sql` 与 `data.sql`（幂等写入 1 个管理员、20 个读者、500 本示例图书）
 - 已有库升级先执行 `backend/src/main/resources/db/upgrade-2026-10.sql`
 - 连接配置见 `backend/src/main/resources/application.yml`，可用环境变量覆盖；全部变量模板见 `.env.example`
 

@@ -1,4 +1,4 @@
--- 初始化数据：1 个管理员、5 个读者、500 本图书
+-- 初始化数据：1 个管理员、20 个读者、500 本图书
 -- 脚本可重复执行：按 username / isbn 去重，已存在的数据不会被覆盖
 
 INSERT INTO sys_user (username, password, real_name, role, status)
@@ -8,7 +8,22 @@ VALUES
     ('reader2', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '李静', 'READER', 1),
     ('reader3', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '王磊', 'READER', 1),
     ('reader4', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '陈晨', 'READER', 1),
-    ('reader5', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '赵敏', 'READER', 1)
+    ('reader5', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '赵敏', 'READER', 1),
+    ('reader6', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '周婷', 'READER', 1),
+    ('reader7', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '吴昊', 'READER', 1),
+    ('reader8', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '郑爽', 'READER', 1),
+    ('reader9', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '孙悦', 'READER', 1),
+    ('reader10', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '马超', 'READER', 1),
+    ('reader11', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '朱琳', 'READER', 1),
+    ('reader12', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '胡楠', 'READER', 1),
+    ('reader13', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '郭婷', 'READER', 1),
+    ('reader14', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '何俊', 'READER', 1),
+    ('reader15', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '高翔', 'READER', 1),
+    ('reader16', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '林娜', 'READER', 1),
+    ('reader17', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '罗成', 'READER', 1),
+    ('reader18', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '梁雪', 'READER', 1),
+    ('reader19', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '宋佳', 'READER', 1),
+    ('reader20', '$2b$10$G8TkgJbvPLWltHrqVpn3DeliD71VXN88uJ8ibLLXT5li2z48ACg5G', '谢东', 'READER', 1)
 ON DUPLICATE KEY UPDATE username = username;
 
 INSERT INTO book (isbn, title, author, publisher, category, price, total_stock, available_stock, description)
