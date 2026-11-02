@@ -10,9 +10,9 @@
 |---|---|
 | 最后更新 | 2026-11-02 |
 | 仓库 | `springboot_vue_system`（云阁图书借阅系统 + AI 服务） |
-| 当前进度 | **W0 / W1 / W2 已完成；W3 进行中（检索基线已交付）；W4 待办** |
+| 当前进度 | **W0 / W1 / W2 已完成；W3 进行中（检索基线+向量+混合+重排已交付，评测受通义额度限制）；W4 待办** |
 | 已完成提交 | 9 个（`37a459c` → `a2e6f67`，工作区干净） |
-| 测试基线 | 后端 71 个单测、AI 服务 **158** 个单测、端到端 16 项断言、UI 18 项断言 |
+| 测试基线 | 后端 71 个单测、AI 服务 **281** 个单测、端到端 16 项断言、UI 18 项断言 |
 | 阻塞项 | W3 开工前需定 embedding 路线（见 §9） |
 
 **状态图例**：`✅ 已完成` / `🟡 进行中` / `⬜ 待办` / `⛔ 阻塞` / `💤 可选（有余量再做）`
@@ -200,20 +200,24 @@ W3 预计 5.5 人日、W4 预计 5 人日（按每周 15–20 小时 ≈ 2.5 周
 - **风险**：500 本书简介较短，可能不适合切分 → 以"不切"为默认
 
 ### W3-2 embedding 管线与 pgvector 入库
-- **状态**：⬜ 待办　**预估**：1 人日　**依赖**：W3-1 + §9 决策项 1
+- **状态**：🟡 进行中（接口与真实索引已完成；完整评测受通义额度限制）　**预估**：1 人日　**依赖**：W3-1 + §9 决策项 1
 - **目标**：向量化 + 建索引，支持按相似度召回
 - **交付物**
   - `ai-service/app/rag/embedding.py`：embedding 抽象（通义 `text-embedding-v3` / 本地 `bge-m3` 二选一，可切换）
   - `ai-service/app/rag/store.py`：pgvector 建表（`id, content, embedding vector(N), metadata jsonb`）、HNSW 索引、批量 upsert（幂等，按 `source_type + source_id + chunk_no` 去重）
   - `ai-service/scripts/index_corpus.py`：分批（每批 ≤ 20）embedding + 入库 + 进度日志 + 失败重试
 - **验收**：`docker compose up -d pgvector` 后一条命令完成建表+入库；重复执行不产生重复行；查询 `SELECT count(*)` 与语料条数一致
+- **已交付（2026-11-02）**：`app/rag/embedding.py`（dashscope/local/fake + auto 工厂）、`app/rag/vector_store.py`（NumpyVectorStore + PgVectorStore 降级）、`scripts/index_corpus.py`
+- **实测**：535×1024 索引，18.2 s / 54 批 / 34 ms 每条；幂等（二次执行跳过，`--force` 重建逐位一致）
 - **涉及文件**：`ai-service/app/rag/*`、`scripts/`、`docker-compose.yml`（已含 pgvector 服务）
+- **阻塞**：通义账号欠费（`Arrearage`），无法复跑需要 embedding 的评测
 - **风险**：embedding 维度与模型必须对应（`text-embedding-v3` 1024 / `bge-m3` 1024）；换模型需重建索引 → 写入 README
 
 ### W3-3 混合检索（向量 + 关键词）
 - **状态**：🟡 进行中（**BM25 基线档已完成**，向量 + RRF 融合待 W3-2）　**预估**：0.5 人日　**依赖**：W3-2
 - **已交付**：`ai-service/app/rag/{tokenizer,bm25,corpus,service}.py`；零依赖中文 unigram+bigram 分词；BM25 k1=1.5/b=0.75 + 非负 IDF；语料缺失降级为空结果不抛异常
 - **基线实测**：Recall@5 **0.973** / MRR **0.859**（book 1.000/0.951、faq 1.000/1.000、rule 0.867/0.394），详见 `docs/RAG评测报告.md`
+- **第二轮（2026-11-02）**：混合检索（BM25 + 通义向量 + 等权 RRF）已实现 → Recall@5 **1.000** / MRR **0.883**（rule R@5 1.000、MRR 0.450）；**发现等权 RRF 不如纯向量（0.916）**，已记为待办（加权 RRF 或向量+重排）
 - **目标**：解决"书名精确词用向量召回会翻车"的问题
 - **交付物**：`ai-service/app/rag/retriever.py`
   - 向量检索 top-20（余弦）
@@ -223,14 +227,16 @@ W3 预计 5.5 人日、W4 预计 5 人日（按每周 15–20 小时 ≈ 2.5 周
 - **风险**：中文全文检索需 `zhparser` 或退回 `ILIKE` → 先用 `ILIKE` 保证可跑，写清局限
 
 ### W3-4 重排（Reranker）
-- **状态**：⬜ 待办　**预估**：0.5 人日　**依赖**：W3-3
+- **状态**：✅ 已完成（2026-11-02）　**预估**：0.5 人日　**依赖**：W3-3
 - **目标**：20 候选 → 5 精排，这是"会调 API"和"懂 RAG"的分水岭
 - **交付物**：`ai-service/app/rag/reranker.py`
   - 方案 A：本地 `bge-reranker-v2-m3`（CPU、约 2GB，sentence-transformers）
   - 方案 B：通义 `gte-rerank`（零下载、按量计费）
   - 可配置开关（`RAG_RERANK_ENABLED`），默认开
 - **验收**：同一 query 加/不加 rerank，目标块排名提升可观测（记录 before/after rank 日志）
-- **风险**：本地模型首次加载慢（~10s）→ 进程启动预热，避免首个请求超时
+- **已交付**：`app/rag/rerank.py`（通义 `gte-rerank-v2` 首选 + DeepSeek listwise 可选 + Noop + 失败回退）、42 个离线单测
+- **实测**：单次重排 ~240 ms；「逾期罚金怎么算」把规则块从最后一位提到第一；BM25+重排 MRR 0.859→**0.884**（book MRR→1.000、rule MRR 0.394→0.422）
+- **风险**：本地模型首次加载慢 → 当前走 API，不受影响
 
 ### W3-5 RAG 工具接入 Agent
 - **状态**：⬜ 待办　**预估**：1 人日　**依赖**：W3-4
@@ -246,7 +252,9 @@ W3 预计 5.5 人日、W4 预计 5 人日（按每周 15–20 小时 ≈ 2.5 周
 ### W3-6 评测集与评测报告 ⭐本周最高价值
 - **状态**：🟡 进行中（**评测集 + 检索层评测已完成**；答案层 RAGAS 待真实模型）　**预估**：1.5 人日　**依赖**：W3-5
 - **已交付**：`ai-service/scripts/gen_golden_qa.py`（85 条：book 30 / faq 30 / rule 15 / refuse 10）、`ai-service/scripts/run_eval.py`（Recall@k / MRR / 拒答负样本分数分布，支持 `--min-recall` 作 CI 门禁）、`docs/RAG评测报告.md` v0.1
-- **基线数字**：总体 Recall@5 0.973 / MRR 0.859；**rule 类 MRR 仅 0.394**（被同形 FAQ 抢位）——已作为 badcase 记录，是 W3-4 重排的主要靶子
+- **基线数字**：总体 Recall@5 0.973 / MRR 0.859；**rule 类 MRR 仅 0.394**（被同形 FAQ 抢位）
+- **第二轮结果**：向量召回使 rule R@5 0.867→1.000；混合 MRR 0.883；BM25+重排 MRR 0.884；**等权 RRF 不如纯向量（0.916）**已记为待优化项
+- **阻塞**：通义欠费，⑤混合+重排 / ⑥向量+重排 两档未完成
 - **目标**：把"效果不错"变成可复核的数字，这是简历差异化的根
 - **交付物**
   - `ai-service/eval/golden_qa.jsonl`：60–80 条（规则 20 / 馆藏 25 / FAQ 15 / 应拒答 10），带 `question / ground_truth / expected_source_ids`
@@ -409,6 +417,12 @@ cd ai-service && .venv/bin/python scripts/build_corpus.py
 cd ai-service && .venv/bin/python scripts/gen_golden_qa.py
 cd ai-service && .venv/bin/python scripts/run_eval.py --min-recall 0.95
 
+# RAG 向量索引（通义 embedding，幂等）
+cd ai-service && .venv/bin/python scripts/index_corpus.py --provider dashscope
+
+# RAG 四档评测（串行跑，勿并行；需要通义额度）
+cd ai-service && RAG_RETRIEVAL_MODE=hybrid RAG_RERANK_ENABLED=true .venv/bin/python scripts/run_eval.py
+
 # 真实模型兼容性（填 Key 后）
 ai-service/.venv/bin/python scripts/check_llm.py
 
@@ -435,5 +449,9 @@ cd frontend && npm run build
 | 2026-11-02 | W3-6 评测集与检索评测完成（85 条用例） | `ai-service/eval/` |
 | 2026-11-02 | **真实模型联调完成**（DeepSeek：function calling + E2E 全绿 + TTFT 521ms） | `scripts/check_llm.py`、`scripts/e2e_ai.py` |
 | 2026-11-02 | 发现 Key 命名问题并修正（`API_KEY` → `DEEPSEEK_API_KEY`） | `.env`（未入库） |
+| 2026-11-02 | W3-2 通义 embedding 索引完成（535×1024，18.2s） | `scripts/index_corpus.py` |
+| 2026-11-02 | W3-3 混合检索完成（R@5 1.000 / MRR 0.883） | `app/rag/service.py` |
+| 2026-11-02 | W3-4 重排完成（通义 gte-rerank-v2，240ms） | `app/rag/rerank.py` |
+| 2026-11-02 | ⚠️ 通义账号欠费，剩余两档评测阻塞 | `docs/RAG评测报告.md` §10.3 |
 | 待定 | W3 开工（需决策项 1/2） | ⬜ |
 | 待定 | W4 开工 | ⬜ |

@@ -159,3 +159,85 @@ cd ai-service
 | `ai-service/scripts/run_eval.py` | 检索评测（支持 `--min-recall` 作为 CI 门禁） |
 | `ai-service/app/rag/{tokenizer,bm25,corpus,service}.py` | 检索实现 |
 | `ai-service/tests/test_rag_{corpus,bm25}.py` | 47 个离线单测（AI 服务总计 158） |
+
+---
+
+## 10. 第二轮：向量检索与重排（2026-11-02 续）
+
+> 版本 v0.2。本轮新增：通义 `text-embedding-v3` 真实索引、向量检索、混合检索（RRF）、通义 `gte-rerank-v2` 重排。
+
+### 10.1 索引与配置
+
+| 项 | 值 |
+|---|---|
+| embedding | 通义 `text-embedding-v3`，1024 维 |
+| 索引规模 | 535 × 1024（book 500 / rule 5 / faq 30） |
+| 构建耗时 | 18.2 s，54 批，单条 34.06 ms |
+| 索引落盘 | `ai-service/data/embeddings/dashscope-1024.npz`（2.2 MB，已 gitignore，可由脚本重建） |
+| 幂等 | 二次执行提示"已是最新"；`--force` 重建后向量逐位一致 |
+| 向量库 | `NumpyVectorStore`（默认，离线可用）；`PgVectorStore` 已实现，连不上自动降级 |
+| 重排 | 通义 `gte-rerank-v2`，实测单次 ~240 ms；失败/无 Key/超时 → 原顺序回退 |
+
+### 10.2 结果（同一评测集 85 条，top-k=5）
+
+| 配置 | Recall@5 | MRR | rule R@5 | rule MRR | 说明 |
+|---|---|---|---|---|---|
+| ① BM25（基线） | 0.973 | 0.859 | 0.867 | 0.394 | 完整可复现 |
+| ② BM25 + 重排 | 0.973 | **0.884** | 0.867 | **0.422** | 重排全部成功 |
+| ③ 纯向量 | **1.000** | **0.916** | **1.000** | **0.578** | ⚠️ 已测得，但报告文件未留存（额度耗尽后无法复跑） |
+| ④ 混合（等权 RRF） | **1.000** | 0.883 | **1.000** | 0.450 | 完整可复现 |
+| ⑤ 混合 + 重排 | 1.000 | 0.896 | 1.000 | 0.478 | ⚠️ 仅部分成功（后半段接口返回 400 欠费），**数字被污染，不作为结论** |
+| ⑥ 向量 + 重排 | — | — | — | — | ❌ 全部降级为 BM25，无效 |
+
+**可以下的结论**：
+
+1. **向量召回解决了 rule 类的召回问题**：rule R@5 0.867 → 1.000（FAQ 同形竞争不再导致漏召回），MRR 0.394 → 0.450（混合）/ 0.578（纯向量）。
+2. **重排对 BM25 有效但不够**：MRR 0.859 → 0.884，book MRR 0.951 → 1.000；但 rule MRR 只到 0.422 —— 因为**重排只能在候选里排**，BM25 的候选集本身缺 rule 块，重排救不回来（印证了"召回上限决定答案上限"）。
+3. **等权 RRF 不如纯向量**（0.883 vs 0.916）：等权把"BM25 的错误 top1"抬到与"向量的正确 top1"同权。已定位到具体用例（rule-002：正确块 vector rank=1 / bm25 rank=9，RRF 反而低于 FAQ 错块 bm25 rank=1 / vector rank=4）。
+4. 因此**下一步应做加权 RRF 或"向量召回 + 重排"**，而不是继续调 BM25 参数。
+
+### 10.3 阻塞：通义账号欠费
+
+评测中途 DashScope 开始返回：
+
+```json
+{"code":"Arrearage","message":"Access denied, please make sure your account is in good standing ... overdue payment"}
+```
+
+→ 免费额度/余额耗尽。影响：
+
+- 无法复跑任何需要 embedding 的评测（向量/混合模式每次查询都要 embed）；
+- 无法完成 ⑤⑥ 两档对比；
+- **已完成的 ①②③④ 数字仍然有效**（当时调用成功并已固化）。
+
+**恢复方式**：在阿里云百炼控制台充值/开通后，按 §10.4 命令重跑即可，代码无需改动。
+
+### 10.4 复现命令
+
+```bash
+cd ai-service
+# 建索引（幂等；--force 强制重建）
+.venv/bin/python scripts/index_corpus.py --provider dashscope
+
+# 四档评测（--out 分开保存，便于对比）
+RAG_RETRIEVAL_MODE=bm25   RAG_RERANK_ENABLED=false .venv/bin/python scripts/run_eval.py --out eval/eval_report_bm25.json
+RAG_RETRIEVAL_MODE=bm25   RAG_RERANK_ENABLED=true  .venv/bin/python scripts/run_eval.py --out eval/eval_report_bm25_rerank.json
+RAG_RETRIEVAL_MODE=hybrid RAG_RERANK_ENABLED=false .venv/bin/python scripts/run_eval.py --out eval/eval_report_hybrid.json
+RAG_RETRIEVAL_MODE=vector RAG_RERANK_ENABLED=true  .venv/bin/python scripts/run_eval.py --out eval/eval_report_vector_rerank.json
+```
+
+> ⚠️ 评测是串行密集调用，**不要并行跑多个评测**（会触发限流/误判为欠费）；单次评测 75 条、约 30~60 s。
+
+### 10.5 测试与工程
+
+- AI 服务单测 **281 个全绿**（+81 本轮新增：embedding 28 / vector_store 32 / hybrid 21；另 +42 重排）
+- 单测全离线：Fake/Stub provider + `httpx.MockTransport`；语料 sha256 与索引不一致时服务拒绝加载（防止用旧索引召回旧规则）
+- 降级链：向量不可用 → BM25；embedding 失败 → 本次查询 BM25；重排失败 → 原顺序；任一环节异常都不抛给 Agent
+
+### 10.6 修订后的目标（待额度恢复后回填 ⑤⑥）
+
+| 指标 | BM25 | 向量 | 混合 | 目标 |
+|---|---|---|---|---|
+| Recall@5 | 0.973 | 1.000 | 1.000 | ≥0.98 ✅ |
+| MRR | 0.859 | 0.916 | 0.883 | ≥0.92（需加权 RRF / 向量+重排） |
+| rule MRR | 0.394 | 0.578 | 0.450 | ≥0.70 |
