@@ -1,5 +1,10 @@
 # 云阁图书馆 · AI 原生借阅系统
 
+[![CI](https://github.com/lxl9527414/library-borrowing-system/actions/workflows/ci.yml/badge.svg)](https://github.com/lxl9527414/library-borrowing-system/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+> 仓库地址：https://github.com/lxl9527414/library-borrowing-system
+
+
 一个**传统图书借阅业务系统 + AI 应用层**的完整实践：
 
 - 业务层：Spring Boot 3.5 + MyBatis-Plus + MySQL + Redis + Vue 3（原有系统，含借阅规则、预约排队、AOP 操作日志）
