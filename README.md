@@ -280,6 +280,7 @@ java -jar backend/target/library-server.jar
 | [docs/云阁图书管理系统技术说明.md](docs/云阁图书管理系统技术说明.md) | 原有业务系统技术说明 |
 | [docs/简历素材.md](docs/简历素材.md) | 简历 bullets、数字卡、STAR 模板 |
 | [docs/面试问答.md](docs/面试问答.md) | 20 个高频追问的回答要点 |
+| [docs/学习文档/README.md](docs/学习文档/README.md) | AI 应用开发学习文档集：6 大主题 + Python 最小必要 + 14 天计划 + 面试速查卡 |
 | [docs/可观测性说明.md](docs/可观测性说明.md) | Langfuse 埋点方式、启用步骤、兜底行为 |
 | [docs/凭据轮换清单.md](docs/凭据轮换清单.md) | 需要轮换的账号、步骤、验证清单 |
 | [docs/MCP集成说明.md](docs/MCP集成说明.md) | MCP Server 的 7 个工具、鉴权、接入方式 |
