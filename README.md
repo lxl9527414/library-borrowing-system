@@ -27,7 +27,7 @@
 | **可观测与容错** | SSE 流式、模型网关降级、Redis 会话跨重启、重排/向量/Redis 全部可优雅降级 |
 
 评测方法与全部数字：
-[RAG 评测报告](docs/RAG评测报告.md) · [AI 性能与成本报告](docs/AI性能与成本报告.md) · [压测报告](docs/压测报告.md)
+[RAG 评测报告](docs/RAG评测报告.md) · [AI 性能与成本报告](docs/AI性能与成本报告.md) · [质量与性能数据](docs/质量与性能数据.md)
 
 ---
 
@@ -156,8 +156,8 @@ cd backend && mvn spring-boot:run
 | RAG 检索评测 | `scripts/run_eval.py` | 六档对比见 [报告](docs/RAG评测报告.md) |
 | RAG 答案层评测 | `scripts/eval_answers.py` | faithfulness 0.940 / 引用 0.913 |
 | 模型基准 | `scripts/bench_llm.py` | TTFT P50 897ms / 84 字每秒 |
-| 界面截图 + 回归 | `node scripts/ui_screenshot.mjs` | 7 张关键状态图 |
-| 只读压测 | `python3 docs/loadtest.py --token <token> ...` | 见 [压测报告](docs/压测报告.md) |
+| 界面截图 + 回归 | `node scripts/ui_screenshot.mjs` | 11 张关键状态图 |
+| 只读压测 | `python3 docs/loadtest.py --token <token> ...` | 见 [质量与性能数据](docs/质量与性能数据.md) |
 
 ---
 
@@ -166,8 +166,7 @@ cd backend && mvn spring-boot:run
 8 条关键决策的「背景 / 选项 / 决策 / 代价」见 **[docs/ADR.md](docs/ADR.md)**：
 双栈为何、AI 为何不直连 DB、为何要人在回路、mock 的价值、向量库选型、重排选型、RAGAS 自研原因、SSE vs WebSocket。
 
-全量任务拆解（W0–W4，含每项验收标准与证据）见 **[docs/AI改造任务清单-W0-W4.md](docs/AI改造任务清单-W0-W4.md)**；
-接口契约见 **[docs/AI-架构与接口契约.md](docs/AI-架构与接口契约.md)**。
+接口契约见 **[docs/AI-架构与接口契约.md](docs/AI-架构与接口契约.md)**；开发过程（任务拆解、验收标准与每轮证据）保留在 git 提交历史中。
 
 ---
 
@@ -253,7 +252,7 @@ java -jar backend/target/library-server.jar
 - 仓库内**不含任何密钥**：`.env`、`deploy/credentials.local` 均被 gitignore；CI 有 `secrets` job 扫描 `scripts/check_secrets.sh`
 - 模型 Key 只从环境变量读取，代码/日志/文档不打印
 - 生产凭据只放服务器 `/opt/library/config/library.env`（systemd `EnvironmentFile`）
-- ⚠️ 本项目调试过程中曾把线上明文密码打印到会话记录，**已列入轮换清单**，见 [docs/凭据轮换清单.md](docs/凭据轮换清单.md)
+- ⚠️ 本项目调试过程中曾把线上明文密码打印到会话记录，**已列入内部凭据轮换清单**（不在仓库内，避免二次暴露）
 
 ## 已知限制（如实列出）
 
@@ -272,13 +271,10 @@ java -jar backend/target/library-server.jar
 |---|---|
 | [docs/AI-架构与接口契约.md](docs/AI-架构与接口契约.md) | 架构、8 个内部端点、SSE 协议、确认流程、实测差异 |
 | [docs/ADR.md](docs/ADR.md) | 8 条关键技术与取舍 |
-| [docs/AI改造任务清单-W0-W4.md](docs/AI改造任务清单-W0-W4.md) | 35 个任务的验收标准与证据 |
 | [docs/RAG评测报告.md](docs/RAG评测报告.md) | 检索六档对比 + 答案层四指标 + badcase |
 | [docs/AI性能与成本报告.md](docs/AI性能与成本报告.md) | TTFT/端到端延迟/token 结构/成本换算 |
-| [docs/压测报告.md](docs/压测报告.md) | 业务接口只读压测（QPS/延迟/瓶颈定位） |
-| [docs/单元测试与覆盖率.md](docs/单元测试与覆盖率.md) | 测试与 JaCoCo 覆盖率 |
+| [docs/质量与性能数据.md](docs/质量与性能数据.md) | 测试矩阵/覆盖率/只读压测/CI 五个 job |
 | [docs/云阁图书管理系统技术说明.md](docs/云阁图书管理系统技术说明.md) | 原有业务系统技术说明 |
 | [docs/可观测性说明.md](docs/可观测性说明.md) | Langfuse 埋点方式、启用步骤、兜底行为 |
-| [docs/凭据轮换清单.md](docs/凭据轮换清单.md) | 需要轮换的账号、步骤、验证清单 |
 | [docs/MCP集成说明.md](docs/MCP集成说明.md) | MCP Server 的 7 个工具、鉴权、接入方式 |
 | [deploy/AI-SERVICE-DEPLOY.md](deploy/AI-SERVICE-DEPLOY.md) | 公网 AI 服务部署与踩坑（可复现） |
