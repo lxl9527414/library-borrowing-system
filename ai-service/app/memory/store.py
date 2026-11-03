@@ -46,6 +46,10 @@ class ConfirmationStore(Protocol):
 
     def get(self, confirmation_id: str) -> "ConfirmationRecord | None": ...
 
+    def get_pending(self, session_id: str) -> "ConfirmationRecord | None":
+        """按会话查当前待确认记录（用于会话被锁死时的前端恢复）。"""
+        ...
+
     def consume(self, confirmation_id: str, session_id: str) -> "ConfirmationRecord | None": ...
 
 
@@ -117,6 +121,13 @@ class _MemoryConfirmationStore:
     def get(self, confirmation_id: str) -> ConfirmationRecord | None:
         self._purge_expired()
         return self._data.get(confirmation_id)
+
+    def get_pending(self, session_id: str) -> ConfirmationRecord | None:
+        self._purge_expired()
+        for record in self._data.values():
+            if record.session_id == session_id:
+                return record
+        return None
 
     def consume(self, confirmation_id: str, session_id: str) -> ConfirmationRecord | None:
         """取出并删除；sessionId 不匹配或已过期都视为无效。"""

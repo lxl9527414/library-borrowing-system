@@ -81,9 +81,27 @@
           <el-tag size="small" type="danger" effect="plain">{{ message.error.code }}</el-tag>
         </div>
         <p class="error-text">{{ message.error.message }}</p>
-        <el-button class="error-retry" size="small" plain type="danger" @click="$emit('retry', message)">
+        <el-button
+          v-if="!hasPendingConfirmation && message.error.code !== 'CONFIRMATION_PENDING'"
+          class="error-retry"
+          size="small"
+          plain
+          type="danger"
+          @click="$emit('retry', message)"
+        >
           <el-icon><RefreshRight /></el-icon>
           重试
+        </el-button>
+        <el-button
+          v-else-if="message.error.code === 'CONFIRMATION_PENDING' && !hasPendingConfirmation"
+          class="error-retry"
+          size="small"
+          plain
+          type="primary"
+          @click="$emit('restart')"
+        >
+          <el-icon><RefreshRight /></el-icon>
+          开始新对话
         </el-button>
       </div>
     </div>
@@ -103,9 +121,15 @@ const props = defineProps({
   message: { type: Object, required: true },
 })
 
-defineEmits(['retry', 'confirm'])
+defineEmits(['retry', 'confirm', 'restart'])
 
 const auth = useAuthStore()
+
+const hasPendingConfirmation = computed(() =>
+  (props.message.confirmations || []).some(
+    (confirmation) => confirmation.state === 'pending' || confirmation.state === 'submitting',
+  ),
+)
 
 const avatarText = computed(() => {
   const name = auth.user?.realName || auth.user?.username || '我'

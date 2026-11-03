@@ -217,16 +217,21 @@ async def chat(payload: ChatRequest, request: Request) -> EventSourceResponse:
         snapshot = None
     if snapshot is not None and snapshot.next:
         await java_client.aclose()
+        # 把待确认的 confirmationId / summary / tools 一起返回：
+        # 前端可据此直接渲染确认卡，避免「确认卡丢失后会话被锁死」。
+        pending = get_confirmation_store().get_pending(session_id)
+        data: dict[str, Any] = {
+            "code": "CONFIRMATION_PENDING",
+            "message": "上一笔写操作还在等待确认，请先确认或取消后再发送新消息。",
+            "pendingAvailable": pending is not None,
+        }
+        if pending is not None:
+            data.update(pending.payload)
+            data["confirmationId"] = pending.confirmation_id
         return _single_event_stream(
             session_id,
             trace_id,
-            AgentEvent(
-                "error",
-                {
-                    "code": "CONFIRMATION_PENDING",
-                    "message": "上一笔写操作还在等待确认，请先确认或取消后再发送新消息。",
-                },
-            ),
+            AgentEvent("error", data),
         )
 
     async def _event_stream() -> AsyncIterator[dict[str, str]]:
@@ -351,6 +356,22 @@ async def chat_confirm(payload: ConfirmRequest, request: Request) -> EventSource
             )
 
     return EventSourceResponse(_event_stream(), ping=PING_INTERVAL_SECONDS, headers=SSE_HEADERS)
+
+
+@router.get("/chat/pending")
+async def chat_pending(sessionId: str, request: Request) -> dict[str, Any]:
+    """查询会话当前待确认的写操作。
+
+    用途：前端刷新页面或确认卡意外丢失后，可据此恢复确认卡并完成/取消操作，
+    避免会话因 pending interrupt 被永久锁死。
+    """
+    _extract_authorization(request)
+    record = get_confirmation_store().get_pending(sessionId)
+    if record is None:
+        return {"pending": None}
+    payload = dict(record.payload or {})
+    payload["confirmationId"] = record.confirmation_id
+    return {"pending": payload}
 
 
 @router.get("/health", response_model=HealthResponse)

@@ -38,6 +38,7 @@
             :key="message.id"
             :message="message"
             @retry="retry"
+            @restart="resetChat"
             @confirm="handleConfirm"
           />
         </div>
@@ -98,7 +99,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getHealth, streamChat, streamConfirm } from '@/api/ai'
+import { getHealth, getPendingConfirmation, streamChat, streamConfirm } from '@/api/ai'
 import { useAuthStore } from '@/store/auth'
 import ChatMessage from '@/components/ai/ChatMessage.vue'
 
@@ -112,6 +113,7 @@ const inputRef = ref(null)
 const input = ref('')
 const messages = ref([])
 const sessionId = ref('')
+const restoredSessions = new Set()
 const streaming = ref(false)
 const autoScroll = ref(true)
 const hasOverflow = ref(false)
@@ -171,6 +173,30 @@ function createAssistant() {
     streaming: false,
     stopped: false,
     welcome: false,
+  }
+}
+
+/**
+ * 会话恢复：如果服务端还有待确认的写操作，自动补一条确认卡。
+ * 场景：用户刷新页面 / 确认卡渲染失败 / 上一轮流被中断。
+ */
+async function restorePending(sid) {
+  if (!sid || restoredSessions.has(sid)) return
+  restoredSessions.add(sid)
+  try {
+    const pending = await getPendingConfirmation({ sessionId: sid })
+    if (!pending || !pending.confirmationId) return
+    const exists = messages.value.some((message) =>
+      (message.confirmations || []).some((item) => item.confirmationId === pending.confirmationId),
+    )
+    if (exists) return
+    const assistant = createAssistant()
+    assistant.content = '检测到上一笔未完成的写操作，请确认或取消后继续：'
+    assistant.confirmations.push(normalizeConfirmation(pending))
+    messages.value.push(assistant)
+    scrollToBottomSoon()
+  } catch {
+    // 恢复失败不阻塞用户：下一个新消息若仍被拦截，会再次返回待确认信息
   }
 }
 
@@ -278,7 +304,10 @@ function handleEvent(message, event) {
     case 'meta': {
       const meta = data && typeof data === 'object' ? data : {}
       message.meta = { sessionId: meta.sessionId, traceId: meta.traceId }
-      if (meta.sessionId) sessionId.value = meta.sessionId
+      if (meta.sessionId) {
+        sessionId.value = meta.sessionId
+        restorePending(meta.sessionId)
+      }
       break
     }
     case 'token': {
@@ -343,9 +372,19 @@ function handleEvent(message, event) {
       break
     }
     case 'error': {
-      message.error = {
-        code: data?.code || 'AI_ERROR',
-        message: data?.message || 'AI 服务返回未知错误',
+      // 上一笔写操作待确认：服务端会带回 confirmationId/summary/tools，
+      // 直接渲染确认卡，用户可在此确认或取消，避免会话被锁死。
+      if (data?.code === 'CONFIRMATION_PENDING' && data?.confirmationId) {
+        message.confirmations.push(normalizeConfirmation(data))
+        message.error = {
+          code: 'CONFIRMATION_PENDING',
+          message: '上一笔写操作还在等待确认，请在下方点击「确认执行」或「取消」。',
+        }
+      } else {
+        message.error = {
+          code: data?.code || 'AI_ERROR',
+          message: data?.message || 'AI 服务返回未知错误',
+        }
       }
       break
     }

@@ -123,6 +123,32 @@ export async function getHealth({ signal } = {}) {
 }
 
 /**
+ * 查询会话当前待确认的写操作（页面刷新 / 确认卡丢失后恢复用）。
+ * 返回 { confirmationId, summary, tools } 或 null。
+ * @param {object} options
+ * @param {string} options.sessionId
+ * @param {string} [options.token] 默认读 localStorage
+ */
+export async function getPendingConfirmation({ sessionId, token } = {}) {
+  const authToken = token || getStoredToken()
+  const response = await fetch(
+    `${AI_BASE}/chat/pending?sessionId=${encodeURIComponent(sessionId || '')}`,
+    { headers: { Accept: 'application/json', ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}) } },
+  )
+  if (response.status === 401) {
+    handleUnauthorized()
+    throw createHttpError('登录已失效，请重新登录', 'UNAUTHORIZED', { status: 401 })
+  }
+  if (!response.ok) {
+    throw createHttpError(`查询待确认状态失败（HTTP ${response.status}）`, 'PENDING_QUERY_FAILED', {
+      status: response.status,
+    })
+  }
+  const body = await response.json().catch(() => null)
+  return body?.pending || null
+}
+
+/**
  * 流式对话。
  * @param {object} options
  * @param {string} options.message 用户输入

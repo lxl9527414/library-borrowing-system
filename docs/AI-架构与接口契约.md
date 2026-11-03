@@ -170,7 +170,7 @@ Query：`keyword`（可选，书名/作者/ISBN 模糊）、`category`（可选�
 | `tool_result` | 工具返回 | `{"callId":"c1","name":"search_books","ok":true,"summary":"找到 1 本，可借 0 本","data":[...]}` |
 | `confirm_required` | 写操作待确认，流在此结束 | `{"confirmationId":"cf-1","tool":"reserve_book","args":{"bookId":1},"summary":"《三体》暂无库存，是否为您预约排队？"}` |
 | `done` | 正常结束 | `{"sessionId":"s-1","usage":{"promptTokens":812,"completionTokens":96},"latencyMs":1840}` |
-| `error` | 异常结束 | `{"code":"LLM_TIMEOUT","message":"模型响应超时，已为您切换到备用模型"}` |
+| `error` | 异常结束 | `{"code":"LLM_TIMEOUT","message":"模型响应超时，已为您切换到备用模型"}`<br>`{"code":"CONFIRMATION_PENDING","message":"上一笔写操作还在等待确认…","pendingAvailable":true,"confirmationId":"cf-1","summary":"…","tools":[…]}` |
 
 约束：
 - 每个流**必须以 `done` 或 `error` 或 `confirm_required` 之一结束**
@@ -191,6 +191,7 @@ Query：`keyword`（可选，书名/作者/ISBN 模糊）、`category`（可选�
 |---|---|---|
 | GET | `/api/ai/health` | `{"status":"ok","llmProvider":"mock","version":"w1"}` |
 | GET | `/api/ai/sessions/{sessionId}` | 会话历史（调试用，可返回最近 20 条消息） |
+| GET | `/api/ai/chat/pending?sessionId=...` | 查询该会话当前待确认的写操作；返回 `{"pending": {confirmationId, summary, tools}}` 或 `{"pending": null}`。用于页面刷新/确认卡丢失后的恢复 |
 
 ---
 
@@ -205,6 +206,7 @@ Query：`keyword`（可选，书名/作者/ISBN 模糊）、`category`（可选�
 | `TOOL_UPSTREAM_ERROR` | Java 内部接口异常 | 回灌错误信息，不中断对话 |
 | `UPSTREAM_UNAUTHENTICATED` | 用户 token 失效 | 直接把 401 透传给前端，要求重新登录 |
 | `AGENT_MAX_STEPS` | 超过最大循环步数（默认 8） | 强制结束并 `done` |
+| `CONFIRMATION_PENDING` | 会话有未确认的写操作（LangGraph 停在 interrupt） | 错误事件携带 `confirmationId/summary/tools`（若记录仍在），前端渲染确认卡供确认或取消；记录已过期时提示「开始新对话」 |
 
 ---
 

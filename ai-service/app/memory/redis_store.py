@@ -29,6 +29,7 @@ logger = get_logger("memory.redis_store")
 DEFAULT_KEY_PREFIX = "ai"
 SESSION_KEY_NAMESPACE = "session"
 CONFIRMATION_KEY_NAMESPACE = "confirmation"
+PENDING_KEY_NAMESPACE = "confirmation_pending"
 
 
 def create_redis_client(
@@ -187,6 +188,9 @@ class RedisConfirmationStore:
     def _key(self, confirmation_id: str) -> str:
         return f"{self._prefix}:{CONFIRMATION_KEY_NAMESPACE}:{confirmation_id}"
 
+    def _pending_key(self, session_id: str) -> str:
+        return f"{self._prefix}:{PENDING_KEY_NAMESPACE}:{session_id}"
+
     @property
     def client(self) -> redis.Redis:
         return self._client
@@ -209,6 +213,10 @@ class RedisConfirmationStore:
             self._client.set(
                 self._key(confirmation_id), _dumps(record), ex=int(ttl_seconds)
             )
+            # 会话 -> 待确认 id 的索引：供「会话被锁死」时前端恢复确认卡
+            self._client.set(
+                self._pending_key(session_id), confirmation_id, ex=int(ttl_seconds)
+            )
         except redis.RedisError as exc:
             logger.warning(
                 "写入 Redis 确认状态失败",
@@ -229,6 +237,25 @@ class RedisConfirmationStore:
             )
             return None
         return self._decode(raw)
+
+    def get_pending(self, session_id: str) -> ConfirmationRecord | None:
+        """按会话查当前待确认记录（索引 key 与记录同 TTL，过期自动消失）。"""
+        try:
+            confirmation_id = self._client.get(self._pending_key(session_id))
+        except redis.RedisError as exc:
+            logger.warning(
+                "读取 Redis 待确认索引失败",
+                extra={"sessionId": session_id, "code": type(exc).__name__},
+            )
+            return None
+        if not confirmation_id:
+            return None
+        if isinstance(confirmation_id, bytes):
+            confirmation_id = confirmation_id.decode("utf-8", errors="replace")
+        record = self.get(str(confirmation_id))
+        if record is None or record.session_id != session_id:
+            return None
+        return record
 
     def consume(self, confirmation_id: str, session_id: str) -> ConfirmationRecord | None:
         """取出并删除；sessionId 不匹配视为无效且**不删除**记录。
@@ -266,6 +293,12 @@ class RedisConfirmationStore:
                 self._client.delete(key)
             except redis.RedisError:  # pragma: no cover - 防御式兜底
                 return None
+        # 清理 pending 索引（避免旧索引指向已消费的记录）
+        try:
+            if self._client.get(self._pending_key(session_id)) == confirmation_id:
+                self._client.delete(self._pending_key(session_id))
+        except redis.RedisError:  # pragma: no cover - 索引清理失败不影响主流程
+            pass
         # 并发场景：别的请求已经消费掉，本次视为无效
         return self._decode(consumed_raw)
 
