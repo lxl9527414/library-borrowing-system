@@ -278,12 +278,7 @@ java -jar backend/target/library-server.jar
 | [docs/压测报告.md](docs/压测报告.md) | 业务接口只读压测（QPS/延迟/瓶颈定位） |
 | [docs/单元测试与覆盖率.md](docs/单元测试与覆盖率.md) | 测试与 JaCoCo 覆盖率 |
 | [docs/云阁图书管理系统技术说明.md](docs/云阁图书管理系统技术说明.md) | 原有业务系统技术说明 |
-| [docs/简历素材.md](docs/简历素材.md) | 简历 bullets、数字卡、STAR 模板 |
-| [docs/面试问答.md](docs/面试问答.md) | 20 个高频追问的回答要点 |
-| [docs/学习文档/README.md](docs/学习文档/README.md) | AI 应用开发学习文档集：6 大主题 + Python 最小必要 + 14 天计划 + 面试速查卡 |
 | [docs/可观测性说明.md](docs/可观测性说明.md) | Langfuse 埋点方式、启用步骤、兜底行为 |
 | [docs/凭据轮换清单.md](docs/凭据轮换清单.md) | 需要轮换的账号、步骤、验证清单 |
 | [docs/MCP集成说明.md](docs/MCP集成说明.md) | MCP Server 的 7 个工具、鉴权、接入方式 |
 | [deploy/AI-SERVICE-DEPLOY.md](deploy/AI-SERVICE-DEPLOY.md) | 公网 AI 服务部署与踩坑（可复现） |
-| [docs/投递前检查清单.md](docs/投递前检查清单.md) | 投递前的 10 分钟自查（含必须你本人做的 3 件事） |
-| [docs/简历项目文案-终稿.md](docs/简历项目文案-终稿.md) | 可直接粘贴的简历项目段（三个岗位变体） |

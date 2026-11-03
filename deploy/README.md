@@ -1,6 +1,6 @@
 # Production Deployment Notes
 
-> 中文部署、演示与日常更新指南见 [../docs/ECS部署与演示指南.md](../docs/ECS部署与演示指南.md)。
+> 中文部署与更新指南见 [AI-SERVICE-DEPLOY.md](AI-SERVICE-DEPLOY.md)（AI 服务），整体部署见 [../README.md#公网部署](../README.md#公网部署)。
 > 日常发布用 `./deploy/push.sh`，演示前体检用 `./deploy/check.sh`。
 
 Target domain: `lxlssr.icu`
